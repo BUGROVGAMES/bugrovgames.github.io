@@ -1,7 +1,7 @@
 [
   {
     "id": 1794953102199,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Кризис в Firaxis Games: студия уволила треть сотрудников, лишилась главы и забуксовала с новой XCOM",
     "excerpt": "Издательство 2K инициировало масштабную реструктуризацию в стенах Firaxis Games, сократив около 60 специалистов. На фоне ухода руководителя студии Хизер Хейзен разработка следующей XCOM столкнулась с серьезными трудностями.",
@@ -18,7 +18,7 @@
       "GameSpot",
       "Bloomberg"
     ],
-    "image": "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://cdn.akamai.steamstatic.com/steam/apps/268500/header.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-17",
     "views": 0,
