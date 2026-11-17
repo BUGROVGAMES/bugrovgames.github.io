@@ -52,38 +52,39 @@ nav,
 
 /* Адаптация под экраны телефонов */
 @media (max-width: 640px) {
-  /* Уменьшаем заголовок главной новости и добавляем воздух от плашек */
-  main article:first-child h2,
-  main section:first-child h2,
-  .hero-card h2,
-  .featured-card h2 {
-    font-size: 1.25rem !important;
-    line-height: 1.3 !important;
-    margin-top: 0.75rem !important;
-    margin-bottom: 0.5rem !important;
-  }
-
-  /* Делаем отступы между плашками (Главная тема / Рубрика) */
-  main article:first-child span,
-  .hero-card span {
-    margin-bottom: 0.25rem;
-  }
-
-  /* Выравниваем строку автор • дата • просмотры • лайки */
-  article footer,
-  .card-meta,
-  [class*="meta"] {
+  /* Делаем главную карточку гибкой по высоте, чтобы заголовок не наезжал на плашки */
+  #featured-container article > div {
+    height: auto !important;
+    min-height: 17.5rem !important;
     display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 0.45rem !important;
-    font-size: 0.75rem !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
   }
 
-  /* Подзаголовок в шапке сайта */
-  header p {
-    font-size: 0.75rem !important;
-    line-height: 1.25 !important;
+  #featured-container article > div > div:nth-child(3) {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    padding: 1rem 1rem 0 1rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  #featured-container article > div > div:nth-child(4) {
+    position: relative !important;
+    bottom: auto !important;
+    padding: 1.25rem 1rem 1rem 1rem !important;
+  }
+
+  #featured-container h2 {
+    font-size: 1.15rem !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Выравниваем строку автор • дата • просмотры и убираем слипание */
+  #featured-container article .flex.items-center.justify-between {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    font-size: 0.7rem !important;
   }
 }
   </style>
@@ -564,7 +565,7 @@ nav,
                 <h2 class="text-xl sm:text-2xl font-extrabold text-white group-hover:text-cyan-300 transition leading-snug">${featured.title}</h2>
                 <p class="text-xs sm:text-sm text-slate-300 mt-2 line-clamp-2">${featured.excerpt}</p>
                 <div class="flex items-center justify-between mt-3 text-xs text-slate-400">
-                  <span>✍️ ${featured.author} • ${featured.date}</span>
+                  <span class="mr-2">✍️ ${featured.author} • ${featured.date}</span>
                   <span>👁️ ${featured.views || 0} • ❤️ ${featured.likes || 0}</span>
                 </div>
               </div>
