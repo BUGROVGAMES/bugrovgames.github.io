@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUGROVGAMES — Главные игровые новости, обзоры и инсайды</title>
+  <meta name="description" content="BUGROVGAMES — независимый игровой портал: свежие новости ПК и консолей, честные обзоры, инди-хиты, киберспорт и аналитика игровой индустрии." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://bugrovgames.com/" />
+
+  <!-- Open Graph / Соцсети -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="BUGROVGAMES" />
+  <meta property="og:title" content="BUGROVGAMES — Главные игровые новости и обзоры" />
+  <meta property="og:description" content="Свежие новости игровой индустрии, обзоры релизов и инсайды каждый день." />
+  <meta property="og:url" content="https://bugrovgames.com/" />
+  <meta property="og:image" content="https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg" />
+
+  <!-- Место для мета-тега Google Search Console (вставишь свой код перед индексацией) -->
+  <!-- <meta name="google-site-verification" content="ТВОЙ_КОД" /> -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #060913; color: #f1f5f9; }
+    .font-gamer { font-family: 'Orbitron', sans-serif; }
+    .neon-bugrov { text-shadow: 0 0 12px rgba(168, 85, 247, 0.75), 0 0 28px rgba(139, 92, 246, 0.45); }
+    .neon-games { text-shadow: 0 0 12px rgba(34, 211, 238, 0.8), 0 0 28px rgba(6, 182, 212, 0.5); }
+    .poster-slice { clip-path: polygon(8% 0, 100% 0, 92% 100%, 0% 100%); }
+    .poster-slice-first { clip-path: polygon(0 0, 100% 0, 92% 100%, 0% 100%); }
+    .poster-slice-last { clip-path: polygon(8% 0, 100% 0, 100% 100%, 0% 100%); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0b1021; }
+    ::-webkit-scrollbar-thumb { background: #26314d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+  </style>
+  <script id="seo-schema" type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "BUGROVGAMES",
+    "url": "https://bugrovgames.com/"
+  }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
+
+  <!-- ШАПКА С AAA-ПОСТЕРАМИ И ВКЛАДКАМИ -->
+  <header class="relative overflow-hidden border-b border-purple-500/30 shadow-[0_10px_40px_-15px_rgba(124,58,237,0.45)]">
+    <div class="absolute inset-0 grid grid-cols-5 bg-slate-950 pointer-events-none select-none">
+      <div class="relative overflow-hidden poster-slice-first -mr-4">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg" alt="" class="w-full h-full object-cover opacity-55 scale-110" />
+      </div>
+      <div class="relative overflow-hidden poster-slice -mx-4">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg" alt="" class="w-full h-full object-cover opacity-55 scale-110" />
+      </div>
+      <div class="relative overflow-hidden poster-slice -mx-4">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg" alt="" class="w-full h-full object-cover opacity-55 scale-110" />
+      </div>
+      <div class="relative overflow-hidden poster-slice -mx-4">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg" alt="" class="w-full h-full object-cover opacity-55 scale-110" />
+      </div>
+      <div class="relative overflow-hidden poster-slice-last -ml-4">
+        <img src="https://cdn.akamai.steamstatic.com/steam/apps/292030/header.jpg" alt="" class="w-full h-full object-cover opacity-55 scale-110" />
+      </div>
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-[#060913]/85 via-[#060913]/75 to-[#060913]/95 backdrop-blur-[1.5px]"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-5 sm:pb-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- Логотип BUGROVGAMES (5 кликов по щиту BG открывают вход в Кабинет Главреда) -->
+        <div class="flex items-center gap-3.5">
+          <button type="button" onclick="handleSecretLogoClick()" title="BUGROVGAMES" class="relative w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900/90 border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.35)] hover:scale-105 transition-transform cursor-pointer">
+            <svg viewBox="0 0 48 48" class="w-9 h-9" fill="none">
+              <defs>
+                <linearGradient id="bgNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE" />
+                  <stop offset="50%" stop-color="#A855F7" />
+                  <stop offset="100%" stop-color="#EC4899" />
+                </linearGradient>
+              </defs>
+              <path d="M24 4L41 12V25C41 35 33.5 41.5 24 44C14.5 41.5 7 35 7 25V12L24 4Z" stroke="url(#bgNeon)" stroke-width="2.5" fill="rgba(15,23,42,0.85)" />
+              <text x="24" y="29" text-anchor="middle" fill="#FFFFFF" font-family="Orbitron, sans-serif" font-weight="900" font-size="14">BG</text>
+            </svg>
+          </button>
+          <a href="https://bugrovgames.com/" onclick="resetHome(event)" class="group">
+            <div class="flex items-center gap-2">
+              <span class="font-gamer text-xl sm:text-2xl font-black tracking-wider text-white neon-bugrov">BUGROV<span class="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent neon-games">GAMES</span></span>
+              <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">MEDIA</span>
+            </div>
+            <p class="text-xs text-slate-300/90 mt-0.5">Главные игровые новости, обзоры и инсайды</p>
+          </a>
+        </div>
+
+        <!-- Скрытая панель редактора (видна ТОЛЬКО после авторизации Главреда) -->
+        <div id="admin-nav-controls" class="hidden items-center gap-2.5">
+          <button id="btn-reader-mode" onclick="switchMode('reader')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition">
+            📰 Лента сайта
+          </button>
+          <button id="btn-editor-mode" onclick="switchMode('editor')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 flex items-center gap-2 transition">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            Кабинет Главреда
+            <span id="draft-counter" class="px-1.5 py-0.2 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">0</span>
+          </button>
+          <button onclick="logoutAdmin()" title="Выйти из режима редактора" class="px-2.5 py-2 rounded-xl text-xs bg-slate-900/90 hover:bg-rose-950/70 text-slate-400 hover:text-rose-300 border border-slate-800 transition">
+            🔒
+          </button>
+        </div>
+      </div>
+
+      <!-- Вкладки рубрик и поиск в шапке -->
+      <div class="mt-5 pt-4 border-t border-white/10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <nav id="category-tabs" class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0"></nav>
+
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1 sm:w-64">
+            <input id="search-input" type="text" oninput="handleSearch(this.value)" placeholder="Поиск по играм, тегам..." class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400" />
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+          </div>
+          <button onclick="toggleBookmarksFilter()" id="btn-bookmarks" title="Сохранённые закладки" class="px-3 py-1.5 rounded-xl bg-slate-950/85 border border-slate-700/80 hover:border-purple-400 text-xs sm:text-sm text-slate-200 flex items-center gap-1.5 transition">
+            🔖 <span id="bookmarks-count" class="font-bold text-purple-300">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-7">
+    <!-- РЕЖИМ ЧИТАТЕЛЯ -->
+    <div id="reader-view" class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+      <div class="lg:col-span-8 space-y-6">
+        <div id="featured-container"></div>
+        <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      </div>
+
+      <!-- ПРАВЫЙ САЙДБАР -->
+      <aside class="lg:col-span-4 space-y-6">
+        <div class="rounded-2xl bg-slate-900/70 border border-slate-800/90 p-5">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2 mb-4">
+            🔥 Популярное на BUGROVGAMES
+          </h3>
+          <div id="popular-list" class="space-y-3.5 text-xs text-slate-400"></div>
+        </div>
+
+        <div class="rounded-2xl bg-slate-900/70 border border-slate-800/90 p-5">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2 mb-4">
+            📅 Ожидаемые релизы
+          </h3>
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div>
+                <div class="font-bold text-white">Grand Theft Auto VI</div>
+                <div class="text-slate-400">PS5, Xbox Series X|S</div>
+              </div>
+              <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-300 font-semibold">Ожидается</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div>
+                <div class="font-bold text-white">The Witcher 4 (Polaris)</div>
+                <div class="text-slate-400">PC, Консоли</div>
+              </div>
+              <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 font-semibold">В разработке</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div>
+                <div class="font-bold text-white">Death Stranding 2</div>
+                <div class="text-slate-400">PS5</div>
+              </div>
+              <span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Скоро</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- КАБИНЕТ ГЛАВНОГО РЕДАКТОРА (доступен только после ввода PIN) -->
+    <div id="editor-view" class="hidden space-y-6">
+      <div class="rounded-2xl bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/30 p-5 sm:p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+              🛡️ Кабинет Главного редактора — BUGROVGAMES
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">
+              Здесь собираются черновики от ИИ-журналиста. Отредактируй текст и нажми «Опубликовать» — сайт сам обновит базу новостей и карту сайта <code class="text-cyan-300">sitemap.xml</code>.
+            </p>
+          </div>
+          <button onclick="openNewArticleModal()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs sm:text-sm font-bold transition">
+            ✍️ Написать статью вручную
+          </button>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          <span class="text-xs font-semibold text-slate-300">🔑 Ключ публикации GitHub:</span>
+          <input id="gh-token-input" type="password" placeholder="Вставь GitHub Personal Access Token (ghp_...)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          <button onclick="saveGhToken()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+            Сохранить ключ в браузере
+          </button>
+          <span id="gh-status" class="text-xs text-slate-400"></span>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-base font-bold text-amber-300 mb-3">📥 Черновики на проверке (ожидают публикации)</h3>
+        <div id="drafts-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      </div>
+
+      <div>
+        <h3 class="text-base font-bold text-emerald-300 mb-3">✅ Опубликованные статьи на сайте</h3>
+        <div id="published-admin-list" class="space-y-3"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ПОДВАЛ -->
+  <footer class="border-t border-slate-800/80 bg-slate-950/90 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div>© 2026 <span class="text-white font-bold">BUGROVGAMES</span> (bugrovgames.com). Все права защищены.</div>
+      <div class="flex items-center gap-4">
+        <a href="https://bugrovgames.com/sitemap.xml" target="_blank" class="hover:text-cyan-400">Sitemap.xml</a>
+        <a href="https://bugrovgames.com/robots.txt" target="_blank" class="hover:text-cyan-400">Robots.txt</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- МОДАЛЬНОЕ ОКНО ЧТЕНИЯ СТАТЬИ -->
+  <div id="article-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm overflow-y-auto p-4 sm:p-6">
+    <div class="max-w-3xl mx-auto rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden shadow-2xl my-6">
+      <div id="modal-article-content"></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО РЕДАКТОРА СТАТЬИ -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm overflow-y-auto p-4 sm:p-6">
+    <div class="max-w-2xl mx-auto rounded-2xl bg-slate-900 border border-purple-500/40 p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-white">✏️ Редактор материала</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+      </div>
+      <input type="hidden" id="edit-id" />
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Заголовок статьи</label>
+        <input id="edit-title" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white" />
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Рубрика</label>
+          <select id="edit-category" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white">
+            <option>ПК и Консоли</option>
+            <option>Инди</option>
+            <option>Киберспорт</option>
+            <option>Обзоры</option>
+            <option>Индустрия</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Оценка (только для обзоров, напр. 9.2)</label>
+          <input id="edit-score" type="text" placeholder="Необязательно" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Ссылка на обложку (URL изображения)</label>
+        <input id="edit-image" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white" />
+      </div>
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Короткий анонс (лид)</label>
+        <textarea id="edit-excerpt" rows="2" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Полный текст статьи (абзацы разделяй пустой строкой)</label>
+        <textarea id="edit-content" rows="7" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs text-slate-400 mb-1">Теги через запятую</label>
+        <input id="edit-tags" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white" />
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-sm">Отмена</button>
+        <button onclick="saveEditedArticle(false)" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold">💾 Сохранить черновик</button>
+        <button onclick="saveEditedArticle(true)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold">✅ Сохранить и опубликовать</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REPO_OWNER = 'bugrovgames';
+    const REPO_NAME = 'bugrovgames.github.io';
+    const SITE_URL = 'https://bugrovgames.com';
+    const EDITOR_PIN = '7788'; // Твой личный PIN для входа в Кабинет Главреда
+    const CATEGORIES = ['Все', 'ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
+
+    let articles = [];
+    let currentCategory = 'Все';
+    let searchQuery = '';
+    let showBookmarksOnly = false;
+    let bookmarks = JSON.parse(localStorage.getItem('bg_bookmarks') || '[]');
+    let likedIds = JSON.parse(localStorage.getItem('bg_likes') || '[]');
+    let isAdminUnlocked = sessionStorage.getItem('bg_admin_unlocked') === '1';
+    let secretClickCount = 0;
+    let secretClickTimer = null;
+
+    function handleSecretLogoClick() {
+      if (isAdminUnlocked) {
+        switchMode('editor');
+        return;
+      }
+      secretClickCount++;
+      clearTimeout(secretClickTimer);
+      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 2000);
+      if (secretClickCount >= 5) {
+        secretClickCount = 0;
+        promptAdminLogin();
+      }
+    }
+
+    function promptAdminLogin() {
+      const pin = prompt('Вход в Кабинет Главного редактора BUGROVGAMES.\nВведите PIN-код:');
+      if (pin === EDITOR_PIN) {
+        isAdminUnlocked = true;
+        sessionStorage.setItem('bg_admin_unlocked', '1');
+        updateAdminVisibility();
+        switchMode('editor');
+      } else if (pin !== null) {
+        alert('Неверный PIN-код.');
+      }
+    }
+
+    function logoutAdmin() {
+      isAdminUnlocked = false;
+      sessionStorage.removeItem('bg_admin_unlocked');
+      updateAdminVisibility();
+      switchMode('reader');
+    }
+
+    function updateAdminVisibility() {
+      const nav = document.getElementById('admin-nav-controls');
+      if (isAdminUnlocked) {
+        nav.classList.remove('hidden');
+        nav.classList.add('flex');
+      } else {
+        nav.classList.add('hidden');
+        nav.classList.remove('flex');
+      }
+    }
+
+    async function init() {
+      const savedToken = localStorage.getItem('bg_gh_token');
+      if (savedToken) {
+        document.getElementById('gh-token-input').value = savedToken;
+        document.getElementById('gh-status').textContent = '✅ Ключ подключён';
+      }
+      try {
+        const res = await fetch('./articles.json?v=' + Date.now());
+        if (res.ok) articles = await res.json();
+      } catch (e) {
+        console.error('Ошибка загрузки articles.json', e);
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('editor') === '1' && !isAdminUnlocked) {
+        promptAdminLogin();
+      }
+      updateAdminVisibility();
+      renderCategories();
+      renderAll();
+
+      const articleId = params.get('article');
+      if (articleId) {
+        const found = articles.find(a => String(a.id) === String(articleId) && a.status === 'published');
+        if (found) openArticle(found.id);
+      }
+    }
+
+    function saveGhToken() {
+      const val = document.getElementById('gh-token-input').value.trim();
+      localStorage.setItem('bg_gh_token', val);
+      document.getElementById('gh-status').textContent = val ? '✅ Ключ сохранён' : '⚠️ Ключ очищен';
+    }
+
+    async function syncToGitHub(commitMsg) {
+      const token = localStorage.getItem('bg_gh_token');
+      if (!token) {
+        alert('Чтобы сохранить изменения на сайт для всех читателей, вставь свой GitHub Token в Кабинете Главреда!');
+        return;
+      }
+      try {
+        await updateGitHubFile('articles.json', JSON.stringify(articles, null, 2), commitMsg, token);
+        const today = new Date().toISOString().split('T')[0];
+        const published = articles.filter(a => a.status === 'published');
+        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/?article=${a.id}</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
+        const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
+        await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: update sitemap.xml', token);
+        alert('✅ Сохранено на GitHub! Сайт и sitemap.xml обновятся через ~30 секунд.');
+      } catch (err) {
+        alert('Ошибка сохранения на GitHub: ' + err.message);
+      }
+    }
+
+    async function updateGitHubFile(path, contentStr, message, token) {
+      const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+      const getRes = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+      let sha = undefined;
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      }
+      const encoded = btoa(unescape(encodeURIComponent(contentStr)));
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, content: encoded, sha })
+      });
+      if (!putRes.ok) throw new Error(await putRes.text());
+    }
+
+    function renderCategories() {
+      const nav = document.getElementById('category-tabs');
+      nav.innerHTML = CATEGORIES.map(cat => {
+        const active = cat === currentCategory && !showBookmarksOnly;
+        return `<button onclick="selectCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition ${active ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'bg-slate-950/75 text-slate-300 hover:bg-slate-800 border border-slate-800'}">${cat}</button>`;
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      currentCategory = cat;
+      showBookmarksOnly = false;
+      switchMode('reader');
+      renderCategories();
+      renderAll();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      switchMode('reader');
+      renderAll();
+    }
+
+    function toggleBookmarksFilter() {
+      showBookmarksOnly = !showBookmarksOnly;
+      switchMode('reader');
+      renderCategories();
+      renderAll();
+    }
+
+    function resetHome(e) {
+      if (e) e.preventDefault();
+      currentCategory = 'Все';
+      searchQuery = '';
+      showBookmarksOnly = false;
+      document.getElementById('search-input').value = '';
+      history.replaceState(null, '', '/');
+      switchMode('reader');
+      renderCategories();
+      renderAll();
+    }
+
+    function switchMode(mode) {
+      const isEditor = mode === 'editor' && isAdminUnlocked;
+      document.getElementById('reader-view').classList.toggle('hidden', isEditor);
+      document.getElementById('editor-view').classList.toggle('hidden', !isEditor);
+      document.getElementById('btn-reader-mode').className = !isEditor
+        ? 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-purple-600 text-white shadow-lg shadow-purple-600/30 transition'
+        : 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition';
+      document.getElementById('btn-editor-mode').className = isEditor
+        ? 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-600 text-white shadow-lg shadow-amber-600/30 flex items-center gap-2 transition'
+        : 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 flex items-center gap-2 transition';
+      if (isEditor) renderEditor();
+    }
+
+    function toggleBookmark(id, e) {
+      if (e) e.stopPropagation();
+      if (bookmarks.includes(id)) bookmarks = bookmarks.filter(b => b !== id);
+      else bookmarks.push(id);
+      localStorage.setItem('bg_bookmarks', JSON.stringify(bookmarks));
+      renderAll();
+    }
+
+    function renderAll() {
+      const published = articles.filter(a => a.status === 'published');
+      const drafts = articles.filter(a => a.status === 'draft');
+      document.getElementById('draft-counter').textContent = drafts.length;
+      document.getElementById('bookmarks-count').textContent = bookmarks.length;
+
+      let filtered = published.filter(a => {
+        if (showBookmarksOnly && !bookmarks.includes(a.id)) return false;
+        if (!showBookmarksOnly && currentCategory !== 'Все' && a.category !== currentCategory) return false;
+        if (searchQuery) {
+          const hay = (a.title + ' ' + a.excerpt + ' ' + (a.tags || []).join(' ')).toLowerCase();
+          if (!hay.includes(searchQuery)) return false;
+        }
+        return true;
+      });
+
+      const featured = (!searchQuery && !showBookmarksOnly && currentCategory === 'Все')
+        ? (filtered.find(a => a.isFeatured) || filtered[0])
+        : null;
+
+      const featuredContainer = document.getElementById('featured-container');
+      if (featured) {
+        featuredContainer.innerHTML = `
+          <article onclick="openArticle(${featured.id})" class="group cursor-pointer relative rounded-2xl overflow-hidden border border-purple-500/30 bg-slate-900 shadow-xl">
+            <div class="relative h-64 sm:h-80 w-full overflow-hidden bg-gradient-to-br from-purple-900 to-slate-900">
+              <img src="${featured.image}" alt="${featured.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+              <div class="absolute top-4 left-4 flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold uppercase tracking-wider">⚡ Главная тема</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-950/80 text-cyan-300 text-xs font-semibold border border-cyan-500/30">${featured.category}</span>
+              </div>
+              <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white group-hover:text-cyan-300 transition leading-snug">${featured.title}</h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-2 line-clamp-2">${featured.excerpt}</p>
+                <div class="flex items-center justify-between mt-3 text-xs text-slate-400">
+                  <span>✍️ ${featured.author} • ${featured.date}</span>
+                  <span>👁️ ${featured.views || 0} • ❤️ ${featured.likes || 0}</span>
+                </div>
+              </div>
+            </div>
+          </article>`;
+      } else {
+        featuredContainer.innerHTML = '';
+      }
+
+      const list = featured ? filtered.filter(a => a.id !== featured.id) : filtered;
+      const grid = document.getElementById('articles-grid');
+      if (!list.length && !featured) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-14 px-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-2">
+            <div class="text-2xl">🎮</div>
+            <div class="text-base font-bold text-white">Редакция BUGROVGAMES готовит свежие материалы</div>
+            <div class="text-xs text-slate-400">Скоро здесь появятся первые новости, обзоры и инсайды игровой индустрии.</div>
+          </div>`;
+      } else {
+        grid.innerHTML = list.map(a => `
+          <article onclick="openArticle(${a.id})" class="group cursor-pointer rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 overflow-hidden flex flex-col justify-between transition shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950">
+                <img src="${a.image}" alt="${a.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'" />
+                <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-lg bg-slate-950/85 text-cyan-300 text-[11px] font-semibold border border-cyan-500/30">${a.category}</span>
+                ${a.score ? `<span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-xs font-black shadow-lg">★ ${a.score}</span>` : ''}
+              </div>
+              <div class="p-4">
+                <h3 class="text-base font-bold text-white group-hover:text-cyan-300 transition line-clamp-2 leading-snug">${a.title}</h3>
+                <p class="text-xs text-slate-400 mt-2 line-clamp-2">${a.excerpt}</p>
+              </div>
+            </div>
+            <div class="px-4 pb-4 pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/70">
+              <span>${a.date}</span>
+              <div class="flex items-center gap-3">
+                <span>❤️ ${a.likes || 0}</span>
+                <button onclick="toggleBookmark(${a.id}, event)" class="hover:text-purple-300">${bookmarks.includes(a.id) ? '🔖' : '📑'}</button>
+              </div>
+            </div>
+          </article>`).join('');
+      }
+
+      const pop = [...published].sort((x, y) => (y.views || 0) - (x.views || 0)).slice(0, 5);
+      document.getElementById('popular-list').innerHTML = pop.length
+        ? pop.map((a, idx) => `
+          <div onclick="openArticle(${a.id})" class="cursor-pointer group flex items-start gap-3">
+            <span class="font-gamer text-sm font-black text-purple-400/80">0${idx + 1}</span>
+            <div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition line-clamp-2">${a.title}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${a.category} • 👁️ ${a.views || 0}</div>
+            </div>
+          </div>`).join('')
+        : '<div>Популярные материалы появятся после первых публикаций.</div>';
+    }
+
+    function openArticle(id) {
+      const a = articles.find(x => x.id === id);
+      if (!a) return;
+      a.views = (a.views || 0) + 1;
+      history.replaceState(null, '', `?article=${a.id}`);
+      document.title = `${a.title} — BUGROVGAMES`;
+
+      const schemaEl = document.getElementById('seo-schema');
+      schemaEl.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": a.score ? "Review" : "NewsArticle",
+        "headline": a.title,
+        "datePublished": a.date,
+        "author": { "@type": "Person", "name": a.author || "Редакция BUGROVGAMES" },
+        "publisher": { "@type": "Organization", "name": "BUGROVGAMES" },
+        "image": [a.image]
+      });
+
+      const isLiked = likedIds.includes(a.id);
+      const paragraphs = Array.isArray(a.content) ? a.content : String(a.content || '').split('\n\n');
+      document.getElementById('modal-article-content').innerHTML = `
+        <div class="relative h-64 sm:h-80 bg-slate-950">
+          <img src="${a.image}" alt="${a.title}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+          <button onclick="closeArticleModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-950/80 text-white hover:bg-purple-600 flex items-center justify-center">✕</button>
+          <div class="absolute bottom-4 left-6 right-6">
+            <span class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold">${a.category}</span>
+            ${a.score ? `<span class="ml-2 px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-xs font-black">Оценка: ${a.score} / 10</span>` : ''}
+            <h1 class="text-xl sm:text-2xl font-extrabold text-white mt-2">${a.title}</h1>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 pb-3 border-b border-slate-800">
+            <span>✍️ ${a.author} • 📅 ${a.date}</span>
+            <span>👁️ ${a.views} просмотров</span>
+          </div>
+          <p class="text-sm sm:text-base font-semibold text-cyan-200/90">${a.excerpt}</p>
+          <div class="space-y-3 text-sm sm:text-base text-slate-200 leading-relaxed">
+            ${paragraphs.map(p => `<p>${p}</p>`).join('')}
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-3">
+            ${(a.tags || []).map(t => `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300">#${t}</span>`).join('')}
+          </div>
+          <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+            <button onclick="likeArticle(${a.id})" class="px-4 py-2 rounded-xl text-xs font-bold transition ${isLiked ? 'bg-rose-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-200'}">
+              ❤️ Нравится (${a.likes || 0})
+            </button>
+            <button onclick="closeArticleModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Закрыть</button>
+          </div>
+        </div>`;
+      document.getElementById('article-modal').classList.remove('hidden');
+    }
+
+    function closeArticleModal() {
+      document.getElementById('article-modal').classList.add('hidden');
+      document.title = 'BUGROVGAMES — Главные игровые новости, обзоры и инсайды';
+      history.replaceState(null, '', '/');
+      renderAll();
+    }
+
+    function likeArticle(id) {
+      const a = articles.find(x => x.id === id);
+      if (!a) return;
+      if (likedIds.includes(id)) {
+        likedIds = likedIds.filter(x => x !== id);
+        a.likes = Math.max(0, (a.likes || 1) - 1);
+      } else {
+        likedIds.push(id);
+        a.likes = (a.likes || 0) + 1;
+      }
+      localStorage.setItem('bg_likes', JSON.stringify(likedIds));
+      openArticle(id);
+    }
+
+    function renderEditor() {
+      const drafts = articles.filter(a => a.status === 'draft');
+      const published = articles.filter(a => a.status === 'published');
+      document.getElementById('draft-counter').textContent = drafts.length;
+
+      document.getElementById('drafts-list').innerHTML = drafts.length
+        ? drafts.map(d => `
+          <div class="rounded-2xl bg-slate-900 border border-amber-500/30 p-4 flex flex-col justify-between gap-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">${d.category}</span>
+                <span class="text-slate-400">${d.date}</span>
+              </div>
+              <h4 class="text-base font-bold text-white">${d.title}</h4>
+              <p class="text-xs text-slate-300 line-clamp-3">${d.excerpt}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-800">
+              <button onclick="openEditModal(${d.id})" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white">✏️ Править</button>
+              <button onclick="publishDraft(${d.id})" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white">✅ Опубликовать</button>
+              <button onclick="deleteArticle(${d.id})" class="ml-auto px-2.5 py-1.5 rounded-lg bg-rose-950/70 hover:bg-rose-800 text-xs text-rose-300">🗑️</button>
+            </div>
+          </div>`).join('')
+        : '<div class="col-span-full text-xs text-slate-400 p-5 rounded-2xl bg-slate-900/50 border border-slate-800">Очередь черновиков пуста. Когда робот-журналист сгенерирует новости, они появятся здесь.</div>';
+
+      document.getElementById('published-admin-list').innerHTML = published.length
+        ? published.map(p => `
+          <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3.5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] text-cyan-400 font-semibold">[${p.category}]</span>
+              <span class="text-sm font-bold text-white ml-1">${p.title}</span>
+              <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openEditModal(${p.id})" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white">✏️ Редактировать</button>
+              <button onclick="deleteArticle(${p.id})" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-800 text-xs text-rose-300">Удалить</button>
+            </div>
+          </div>`).join('')
+        : '<div class="text-xs text-slate-400">Опубликованных статей пока нет.</div>';
+    }
+
+    function openNewArticleModal() {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('edit-title').value = '';
+      document.getElementById('edit-category').value = 'ПК и Консоли';
+      document.getElementById('edit-score').value = '';
+      document.getElementById('edit-image').value = 'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg';
+      document.getElementById('edit-excerpt').value = '';
+      document.getElementById('edit-content').value = '';
+      document.getElementById('edit-tags').value = 'Игры, Новости';
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function openEditModal(id) {
+      const a = articles.find(x => x.id === id);
+      if (!a) return;
+      document.getElementById('edit-id').value = a.id;
+      document.getElementById('edit-title').value = a.title;
+      document.getElementById('edit-category').value = a.category;
+      document.getElementById('edit-score').value = a.score || '';
+      document.getElementById('edit-image').value = a.image || '';
+      document.getElementById('edit-excerpt').value = a.excerpt || '';
+      document.getElementById('edit-content').value = Array.isArray(a.content) ? a.content.join('\n\n') : (a.content || '');
+      document.getElementById('edit-tags').value = (a.tags || []).join(', ');
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    }
+
+    async function saveEditedArticle(publishNow) {
+      const idVal = document.getElementById('edit-id').value;
+      const title = document.getElementById('edit-title').value.trim();
+      if (!title) return alert('Введите заголовок статьи!');
+      const category = document.getElementById('edit-category').value;
+      const score = document.getElementById('edit-score').value.trim();
+      const image = document.getElementById('edit-image').value.trim() || 'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg';
+      const excerpt = document.getElementById('edit-excerpt').value.trim();
+      const content = document.getElementById('edit-content').value.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
+      const tags = document.getElementById('edit-tags').value.split(',').map(s => s.trim()).filter(Boolean);
+      const today = new Date().toISOString().split('T')[0];
+
+      if (idVal) {
+        const idx = articles.findIndex(x => String(x.id) === String(idVal));
+        if (idx !== -1) {
+          articles[idx] = {
+            ...articles[idx],
+            title, category, score: score || undefined, image, excerpt, content, tags,
+            status: publishNow ? 'published' : articles[idx].status
+          };
+        }
+      } else {
+        articles.unshift({
+          id: Date.now(),
+          status: publishNow ? 'published' : 'draft',
+          category,
+          score: score || undefined,
+          title,
+          excerpt,
+          content,
+          image,
+          author: 'Алексей Бугров',
+          date: today,
+          views: 0,
+          likes: 0,
+          tags,
+          isFeatured: articles.filter(a => a.status === 'published').length === 0
+        });
+      }
+      closeEditModal();
+      renderEditor();
+      renderAll();
+      await syncToGitHub(publishNow ? `Publish: ${title}` : `Save draft: ${title}`);
+    }
+
+    async function publishDraft(id) {
+      const a = articles.find(x => x.id === id);
+      if (!a) return;
+      a.status = 'published';
+      a.date = new Date().toISOString().split('T')[0];
+      renderEditor();
+      renderAll();
+      await syncToGitHub(`Publish article: ${a.title}`);
+    }
+
+    async function deleteArticle(id) {
+      if (!confirm('Удалить этот материал?')) return;
+      articles = articles.filter(x => x.id !== id);
+      renderEditor();
+      renderAll();
+      await syncToGitHub(`Delete article #${id}`);
+    }
+
+    init();
+  </script>
+</body>
+</html>
