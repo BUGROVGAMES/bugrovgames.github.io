@@ -9,66 +9,63 @@ if (!GEMINI_API_KEY) {
 const articles = JSON.parse(fs.readFileSync('articles.json', 'utf8'));
 const existingTitles = articles.slice(0, 40).map(a => a.title).join(' | ');
 
-const SOURCES_BASE = {
-  studios_20: [
-    'rockstargames.com', 'cdprojektred.com', 'fromsoftware.jp', 'naughtydog.com',
-    'larion.com', 'bethesda.net', 'insomniac.games', 'capcom.com', 'valvesoftware.com',
-    'blizzard.com', 'ubisoft.com', 'ea.com', 'square-enix-games.com', 'kojimaproductions.jp',
-    'remedygames.com', 'obsidian.net', 'riotgames.com', 'epicgames.com', 'bungie.net',
-    '2k.com'
-  ],
-  gaming_media_50: [
-    'ign.com', 'gamespot.com', 'pcgamer.com', 'eurogamer.net', 'polygon.com',
-    'kotaku.com', 'videogameschronicle.com', 'gamesradar.com', 'rockpapershotgun.com',
-    'vg247.com', 'gamesindustry.biz', 'gamedeveloper.com', 'gematsu.com', 'destructoid.com',
-    'escapistmagazine.com', 'shacknews.com', 'thegamer.com', 'pcgamesn.com', 'pushsquare.com',
-    'purexbox.com', 'nintendolife.com', 'dexerto.com', 'insider-gaming.com', 'dsogaming.com',
-    'wccftech.com', 'digitaltrends.com/gaming', 'windowscentral.com/gaming', 'tweaktown.com',
-    'venturebeat.com/games', 'arstechnica.com/gaming', 'theverge.com/games', 'wired.com/tag/video-games',
-    'dualshockers.com', 'siliconera.com', 'rpgsite.net', 'mmorpg.com', 'massivelyop.com',
-    'steamdb.info', 'howlongtobeat.com', 'metacritic.com', 'opencritic.com', 'dtf.ru',
-    'stopgame.ru', 'igromania.ru', 'ixbt.games', 'playground.ru', 'kanobu.ru',
-    'cybersport.ru', 'hltv.org', 'liquipedia.net'
-  ],
-  hardware_vendors: [
-    'nvidia.com', 'amd.com', 'intel.com', 'asus.com/rog', 'msi.com',
-    'gigabyte.com', 'corsair.com', 'razer.com', 'logitechg.com', 'steelseries.com',
-    'hyperx.com', 'samsung.com/semiconductor', 'kingston.com', 'western-digital.com',
-    'tomshardware.com', 'techpowerup.com', 'anandtech.com', 'digitalfoundry.net'
-  ],
-  x_accounts: [
-    'x.com/geoffkeighley', 'x.com/jasonschreier', 'x.com/TomHenderson_', 'x.com/shinobi602',
-    'x.com/Wario64', 'x.com/SteamDB', 'x.com/RockstarGames', 'x.com/CDPROJEKTRED',
-    'x.com/HIDEO_KOJIMA_EN', 'x.com/SwenVincke', 'x.com/Neil_Druckmann', 'x.com/PhilSpencer',
-    'x.com/PlayStation', 'x.com/Xbox', 'x.com/NintendoAmerica', 'x.com/NVIDIAGeForce',
-    'x.com/AMDRadeon', 'x.com/IntelGaming', 'x.com/IGN', 'x.com/VGC_News'
-  ]
-};
+const RSS_FEEDS = [
+  'https://www.videogameschronicle.com/feed/',
+  'https://www.eurogamer.net/feed',
+  'https://www.pcgamer.com/rss/',
+  'https://feeds.feedburner.com/ign/games-all',
+  'https://www.gamespot.com/feeds/game-news/',
+  'https://www.rockpapershotgun.com/feed',
+  'https://www.gematsu.com/feed',
+  'https://insider-gaming.com/feed/'
+];
 
-const prompt = `Ты — выпускающий редактор и ведущий аналитик игрового медиапортала BUGROVGAMES.
-Твоя задача — провести мониторинг свежих событий за последние 24–48 часов по следующим базам источников:
+async function getAvailableModels() {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
+  if (!res.ok) return ['gemini-3.8-flash', 'gemini-3.0-flash', 'gemini-2.0-flash'];
+  const data = await res.json();
+  const names = (data.models || [])
+    .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map(m => m.name.replace('models/', ''))
+    .filter(n => n.includes('flash') && !n.includes('image') && !n.includes('audio'));
+  console.log('Доступные Flash-модели для ключа:', names.join(', '));
+  return names.length ? names : ['gemini-3.8-flash'];
+}
 
-1. ОФИЦИАЛЬНЫЕ САЙТЫ 20 ВЕДУЩИХ СТУДИЙ:
-${SOURCES_BASE.studios_20.join(', ')}
+async function fetchFreshRssNews() {
+  const items = [];
+  for (const feedUrl of RSS_FEEDS) {
+    try {
+      const res = await fetch(feedUrl, { headers: { 'User-Agent': 'BUGROVGAMES-Bot/1.0' } });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      const matches = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 4);
+      for (const m of matches) {
+        const block = m[1];
+        const title = (block.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i)?.[1]
+          || block.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || '').trim();
+        const desc = (block.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i)?.[1]
+          || block.match(/<description>([\s\S]*?)<\/description>/i)?.[1] || '')
+          .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 450);
+        if (title) items.push(`- [${new URL(feedUrl).hostname}] ${title}: ${desc}`);
+      }
+    } catch (_) {}
+  }
+  return items.slice(0, 25).join('\n');
+}
 
-2. 50 АВТОРИТЕТНЫХ ИГРОВЫХ СМИ И БАЗ ДАННЫХ:
-${SOURCES_BASE.gaming_media_50.join(', ')}
-
-3. ПРОИЗВОДИТЕЛИ ИГРОВОГО ЖЕЛЕЗА И ТЕХНОЛОГИЙ (GPU, CPU, периферия, тесты производительности):
-${SOURCES_BASE.hardware_vendors.join(', ')}
-
-4. СОЦСЕТЬ X (заявления геймдиректоров, инсайдеров, официальные треды студий):
-${SOURCES_BASE.x_accounts.join(', ')}
-
+function buildPrompt(rssContext) {
+  return `Ты — выпускающий редактор и ведущий аналитик игрового медиапортала BUGROVGAMES.
+${rssContext ? `Ниже — свежая сводка реальных заголовков и заметок из ведущих мировых игровых СМИ за последние 24 часа:\n${rssContext}\n\n` : ''}
 ЖЁСТКИЕ РЕДАКЦИОННЫЕ ПРАВИЛА:
-1. ВЫБОР ТЕМЫ И УНИКАЛЬНОСТЬ: Выбери ОДНУ самую резонансную новость (крупный анонс, скандал, перенос, патч, рекорд онлайна, важный комментарий в X или прорыв в игровом железе/драйверах). Тема НЕ ДОЛЖНА пересекаться с уже опубликованными или черновиками на сайте: [${existingTitles || 'база пока пуста'}].
-2. ПРАВИЛО ДВОЙНОГО ФАКТЧЕКИНГА: Никогда не пиши статью по одному случайному источнику. Обязательно найди подтверждение фактов минимум в ДВУХ независимых источниках (например: пост в X или блог студии + материал в крупном СМИ). Если подтверждения нет — выбери другую тему.
-3. ЗАПРЕТ НА КОПИПАСТ И ПОВЕРХНОСТНЫЙ РЕРАЙТ: Запрещено переводить или пересказывать одну статью абзац за абзацем. Синтезируй информацию из нескольких источников в самостоятельный журналистский текст.
-4. ГЛУБИНА И БЭКГРАУНД:
-   - Абзац 1 (Лид и суть): Что именно произошло, точные цифры, даты, имена спикеров или названия технологий.
-   - Абзац 2 (Детали из разных источников): Подробности, реакция сообщества или заявления разработчиков в X, технические нюансы.
-   - Абзац 3 (Контекст и значение для индустрии): Почему это важно для игроков, как это связано с предыдущими проектами студии или ситуацией на рынке железа/игр.
-5. СТИЛЬ: Профессиональный, живой язык игровой журналистики без канцелярита и штампов вроде «в мире игр произошло событие» или «фанаты с нетерпением ждут».
+1. ВЫБОР ТЕМЫ И УНИКАЛЬНОСТЬ: Выбери ОДНУ самую резонансную игровую новость (анонс, крупный патч, релиз, рекорд в Steam, событие индустрии или игрового железа). Тема НЕ ДОЛЖНА повторять уже существующие статьи на сайте: [${existingTitles || 'база пока пуста'}].
+2. ПРАВИЛО ДВОЙНОГО ФАКТЧЕКИНГА: Опирайся на факты, подтверждённые минимум в двух источниках или в официальных заявлениях студий/СМИ. Укажи использованные источники в поле sourcesUsed.
+3. ЗАПРЕТ НА КОПИПАСТ И ПОВЕРХНОСТНЫЙ РЕРАЙТ: Запрещено дословно переводить одну заметку абзац за абзацем. Синтезируй факты в самостоятельный аналитический материал на русском языке.
+4. СТРУКТУРА И ГЛУБИНА:
+   - Абзац 1 (Лид и суть): Что именно произошло, точные цифры, даты, названия игр или технологий.
+   - Абзац 2 (Подробности и реакция): Детали, реакция игроков и индустрии, технические нюансы.
+   - Абзац 3 (Контекст и бэкграунд): Почему это важно для игроков и как это связано с предыдущими релизами студии или рынком.
+5. СТИЛЬ: Живой, экспертный язык игровой журналистики без штампов вроде «в мире игр произошло событие».
 
 Верни ответ СТРОГО в формате чистого JSON (без markdown-тегов \`\`\`json и пояснений вокруг):
 {
@@ -84,27 +81,66 @@ ${SOURCES_BASE.x_accounts.join(', ')}
   "steamAppId": "числовой AppID игры в Steam, если новость об игре из Steam (например 1091500 для Cyberpunk 2077, 1245620 для Elden Ring, 730 для CS2), иначе 1091500",
   "tags": ["Тег1", "Тег2", "Тег3", "Тег4"]
 }`;
+}
 
-async function run() {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+async function callGemini(model, prompt, useGoogleSearch) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.5 }
+  };
+  if (useGoogleSearch) {
+    payload.tools = [{ google_search: {} }];
+  }
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      tools: [{ google_search: {} }],
-      generationConfig: {
-        temperature: 0.5
-      }
-    })
+    body: JSON.stringify(payload)
   });
-
   if (!res.ok) {
-    throw new Error(`Gemini API error: ${res.status} ${await res.text()}`);
+    const errText = await res.text();
+    const err = new Error(`HTTP ${res.status}: ${errText}`);
+    err.status = res.status;
+    throw err;
+  }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+}
+
+async function run() {
+  const models = await getAvailableModels();
+  let rawText = '';
+
+  // Попытка 1: через встроенный Google Search
+  for (const model of models) {
+    try {
+      console.log(`Пробуем модель ${model} с Google Search...`);
+      rawText = await callGemini(model, buildPrompt(''), true);
+      if (rawText) break;
+    } catch (e) {
+      console.warn(`Модель ${model} (Google Search) недоступна: ${e.status}`);
+    }
   }
 
-  const data = await res.json();
-  const rawText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+  // Попытка 2: если Google Search упёрся в квоту 429 на Free Tier — берём реальные новости из RSS
+  if (!rawText) {
+    console.log('Переключаемся на бесплатный сбор свежих новостей через RSS ведущих игровых СМИ...');
+    const rssContext = await fetchFreshRssNews();
+    for (const model of models) {
+      try {
+        console.log(`Генерируем статью через ${model} на основе RSS...`);
+        rawText = await callGemini(model, buildPrompt(rssContext), false);
+        if (rawText) break;
+      } catch (e) {
+        console.warn(`Модель ${model} (RSS) ошибка: ${e.status}`);
+      }
+    }
+  }
+
+  if (!rawText) {
+    throw new Error('Не удалось получить ответ ни от одной доступной модели Gemini.');
+  }
+
   const cleanJson = rawText.replace(/```json|```/g, '').trim();
   const parsed = JSON.parse(cleanJson);
 
