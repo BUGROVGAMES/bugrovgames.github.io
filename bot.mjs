@@ -63,7 +63,16 @@ const SOURCES_BASE = {
   ]
 };
 
-// Легальные стоковые обложки (CC0 / Unsplash) для тем без страницы игры в Steam
+// Легальные обложки корпораций и платформ (CC0 / Unsplash) для судов, магазинов и консолей
+const PLATFORM_COVERS = {
+  playstation: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80',
+  xbox: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=1200&q=80',
+  nintendo: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80',
+  steam: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=80',
+  hardware: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80'
+};
+
+// Легальные стоковые обложки по рубрикам (CC0 / Unsplash)
 const LEGAL_FALLBACK_COVERS = {
   'ПК и Консоли': 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80',
   'Инди': 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80',
@@ -148,13 +157,11 @@ ${rssContext ? `СВЕЖАЯ СВОДКА ИЗ RSS-ЛЕНТ:\n${rssContext}\n\n`
    - Абзац 2 (Подробности и реакция индустрии): Детали из разных источников, комментарии разработчиков, технические нюансы.
    - Абзац 3 (Бэкграунд и контекст): История вопроса, сравнение с предыдущими релизами студии или поколениями железа.
    - Абзац 4 (Редакторский вывод): Что это значит для игроков и чего ждать дальше.
-5. ТОЧНЫЙ ПОДБОР ОФИЦИАЛЬНОЙ ОБЛОЖКИ (СТРОГАЯ ИЕРАРХИЯ ДЛЯ ПОИСКА В STEAM):
-   - Твоя задача — подобрать точное официальное английское название игры, страница которой гарантированно есть в магазине Steam, чтобы подтянуть её официальный постер.
-   - Шаг А (Конкретная игра): Если в новости упоминается игра (например, "новая XCOM", "обновление для Cyberpunk 2077", "слухи о Half-Life 3"), укажи в "exactGameName" её точное английское название из Steam ("XCOM 2", "Cyberpunk 2077", "Half-Life 2"). Не пиши невышедшие или безымянные сиквелы без страницы в Steam (вместо "XCOM 3" пиши "XCOM 2", вместо "The Witcher 4" пиши "The Witcher 3: Wild Hunt", вместо "GTA 6" пиши "Grand Theft Auto V").
-   - Шаг Б (Новость про студию или издателя): Если новость про увольнения, покупку студии, смену руководства или финансовый отчёт без конкретной игры — укажи самую известную вышедшую в Steam игру этой студии (например: Firaxis -> "XCOM 2" или "Sid Meier's Civilization VI"; Larian -> "Baldur's Gate 3"; Remedy -> "Control Ultimate Edition"; Ubisoft -> "Assassin's Creed Valhalla"; Bethesda -> "Starfield").
-   - Шаг В (Эксклюзив консоли или киберспорт): Если игра не выходила на ПК (например, Nintendo или старый эксклюзив PS5) — укажи "none". Для киберспорта укажи дисциплину ("Counter-Strike 2", "Dota 2", "Apex Legends").
-   - Шаг Г (Только железо или общие законы): Ставь "none" ТОЛЬКО если в тексте вообще нет ни одной игры и ни одной игровой студии (например, новость исключительно про видеокарты NVIDIA, процессоры AMD или регулирование рынка).
-   - В поле "backupGameName" укажи вторую запасную игру этой же студии или жанра из Steam на случай, если первая не найдётся (или "none").
+5. ТОЧНЫЙ ПОДБОР ОФИЦИАЛЬНОЙ ОБЛОЖКИ (СТРОГАЯ ИЕРАРХИЯ):
+   - Шаг А (Конкретная игра): Если в новости упоминается конкретная игра (например, "новая XCOM", "обновление для Cyberpunk 2077"), укажи в "exactGameName" её точное английское название из Steam ("XCOM 2", "Cyberpunk 2077"), а в "platformBrand" напиши "none". Не пиши невышедшие сиквелы без страницы в Steam (вместо "XCOM 3" пиши "XCOM 2", вместо "GTA 6" пиши "Grand Theft Auto V").
+   - Шаг Б (Корпорации, суды, консоли, магазины, подписки): Если новость касается корпорации, судебного разбирательства, цифрового магазина, прошивки консоли или подписки БЕЗ конкретной игры (например: суд против Sony / PlayStation Store, цены на Xbox Game Pass, продажи Nintendo Switch, правила Valve / Steam, видеокарты NVIDIA / AMD) — НЕ подставляй случайную игру! В полях "exactGameName" и "backupGameName" напиши "none", а в поле "platformBrand" укажи одно из значений: "playstation", "xbox", "nintendo", "steam" или "hardware".
+   - Шаг В (Разработчик игр без конкретной игры): Если новость касается именно игровой студии-разработчика (например, кризис в Firaxis, увольнения в Larian или Remedy) и в тексте упоминается или подразумевается их главная франшиза — укажи её в "exactGameName" ("XCOM 2", "Baldur's Gate 3", "Control Ultimate Edition"), а "platformBrand" поставь "none".
+   - В поле "backupGameName" укажи вторую запасную игру этой студии/серии в Steam или "none".
 
 Верни ответ СТРОГО в формате чистого JSON (без markdown-тегов \`\`\`json и пояснений вокруг):
 {
@@ -170,6 +177,7 @@ ${rssContext ? `СВЕЖАЯ СВОДКА ИЗ RSS-ЛЕНТ:\n${rssContext}\n\n`
   "sourcesUsed": ["Источник 1", "Источник 2"],
   "exactGameName": "точное английское название игры в Steam или none",
   "backupGameName": "запасная игра этой студии/серии в Steam или none",
+  "platformBrand": "playstation | xbox | nintendo | steam | hardware | none",
   "tags": ["Тег1", "Тег2", "Тег3", "Тег4"]
 }`;
 }
@@ -221,17 +229,26 @@ async function run() {
   const cleanJson = rawText.replace(/```json|```/g, '').trim();
   const parsed = JSON.parse(cleanJson);
 
-  // Легальный подбор обложки: официальный пресс-постер Steam (основной -> запасной -> по тегам) или CC0
+  // Легальный подбор обложки:
+  // 1) Брендовая обложка платформы (для судов, магазинов, консолей)
+  // 2) Официальный пресс-постер игры из Steam (основной -> запасной)
+  // 3) Тематическая обложка CC0 по рубрике
   let finalImage = '';
-  const candidates = [
-    parsed.exactGameName,
-    parsed.backupGameName,
-    ...(Array.isArray(parsed.tags) ? parsed.tags : [])
-  ].filter(name => name && name.toLowerCase() !== 'none' && /^[a-zA-Z0-9\s:'".-]+$/.test(name) && name.length > 2);
+  const brand = (parsed.platformBrand || '').toLowerCase().trim();
+  if (brand && brand !== 'none' && PLATFORM_COVERS[brand]) {
+    finalImage = PLATFORM_COVERS[brand];
+  }
 
-  for (const gameName of candidates) {
-    finalImage = await findSteamCover(gameName);
-    if (finalImage) break;
+  if (!finalImage) {
+    const candidates = [
+      parsed.exactGameName,
+      parsed.backupGameName
+    ].filter(name => name && name.toLowerCase() !== 'none' && /^[a-zA-Z0-9\s:'".-]+$/.test(name) && name.length > 2);
+
+    for (const gameName of candidates) {
+      finalImage = await findSteamCover(gameName);
+      if (finalImage) break;
+    }
   }
 
   if (!finalImage) {
