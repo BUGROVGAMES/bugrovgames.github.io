@@ -363,6 +363,200 @@ nav,
     let secretClickCount = 0;
     let secretClickTimer = null;
 
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function resolveAbsoluteImage(img) {
+      if (!img) return `${SITE_URL}/favicon.jpg`;
+      if (img.startsWith('http')) return img;
+      return `${SITE_URL}/${img.replace(/^\.?\//, '')}`;
+    }
+
+    // Генератор полноценной статической SEO-страницы p/{id}.html
+    function buildArticleHtmlPage(a) {
+      const pageUrl = `${SITE_URL}/p/${a.id}.html`;
+      const absImage = resolveAbsoluteImage(a.image);
+      const imgSrc = a.image && !a.image.startsWith('http') ? `../${a.image.replace(/^\.?\//, '')}` : (a.image || '../favicon.jpg');
+      const paragraphs = Array.isArray(a.content) ? a.content : String(a.content || '').split('\n\n');
+      const schemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": a.score ? "Review" : "NewsArticle",
+        "headline": a.title,
+        "description": a.excerpt,
+        "datePublished": a.date,
+        "dateModified": a.date,
+        "mainEntityOfPage": pageUrl,
+        "author": { "@type": "Person", "name": a.author || "Редакция BUGROVGAMES" },
+        "publisher": {
+          "@type": "Organization",
+          "name": "BUGROVGAMES",
+          "logo": { "@type": "ImageObject", "url": `${SITE_URL}/favicon.jpg` }
+        },
+        "image": [absImage]
+      });
+
+      return `<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(a.title)} — BUGROVGAMES</title>
+  <meta name="description" content="${escapeHtml(a.excerpt)}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="${pageUrl}" />
+  <link rel="icon" type="image/jpeg" href="../favicon.jpg" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="BUGROVGAMES" />
+  <meta property="og:title" content="${escapeHtml(a.title)}" />
+  <meta property="og:description" content="${escapeHtml(a.excerpt)}" />
+  <meta property="og:url" content="${pageUrl}" />
+  <meta property="og:image" content="${escapeHtml(absImage)}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeHtml(a.title)}" />
+  <meta name="twitter:description" content="${escapeHtml(a.excerpt)}" />
+  <meta name="twitter:image" content="${escapeHtml(absImage)}" />
+
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #060913; color: #f1f5f9; }
+    .font-gamer { font-family: 'Orbitron', sans-serif; }
+  </style>
+  <script type="application/ld+json">${schemaJson}<\/script>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
+  <header class="border-b border-purple-500/30 bg-[#060913]/95 sticky top-0 z-30 backdrop-blur">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <a href="../" class="flex items-center gap-2.5">
+        <span class="font-gamer text-lg sm:text-xl font-black tracking-wider text-white">BUGROV<span class="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">GAMES</span></span>
+      </a>
+      <a href="../" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-purple-600 border border-slate-700 text-xs sm:text-sm font-semibold text-white transition">← Все новости</a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-7">
+    <article class="rounded-2xl bg-slate-900/90 border border-slate-800 overflow-hidden shadow-2xl">
+      <div class="relative h-64 sm:h-96 bg-slate-950">
+        <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(a.title)}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+        <div class="absolute bottom-4 left-5 right-5 sm:bottom-6 sm:left-8 sm:right-8">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold">${escapeHtml(a.category)}</span>
+            ${a.score ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-xs font-black">Оценка: ${escapeHtml(a.score)} / 10</span>` : ''}
+          </div>
+          <h1 class="text-xl sm:text-3xl font-extrabold text-white mt-2.5 leading-snug">${escapeHtml(a.title)}</h1>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-8 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 pb-4 border-b border-slate-800">
+          <span>✍️ ${escapeHtml(a.author || 'Редакция BUGROVGAMES')} • 📅 ${escapeHtml(a.date)}</span>
+          <span id="stat-views">👁️ ${a.views || 0} просмотров</span>
+        </div>
+
+        <p class="text-base sm:text-lg font-semibold text-cyan-200/95 leading-relaxed">${escapeHtml(a.excerpt)}</p>
+
+        <div class="space-y-4 text-sm sm:text-base text-slate-200 leading-relaxed">
+          ${paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('\n          ')}
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 pt-3">
+          ${(a.tags || []).map(t => `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300">#${escapeHtml(t)}</span>`).join('')}
+        </div>
+
+        <div class="pt-5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <button id="btn-like" onclick="togglePageLike()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-slate-800 hover:bg-slate-700 text-slate-200">
+            ❤️ Нравится (<span id="stat-likes">${a.likes || 0}</span>)
+          </button>
+          <a href="../" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm font-bold text-white transition">Читать другие новости →</a>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="border-t border-slate-800/80 bg-slate-950/90 py-6 mt-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>© 2026 <span class="text-white font-bold">BUGROVGAMES</span> (bugrovgames.com)</div>
+      <a href="../sitemap.xml" class="hover:text-cyan-400">Sitemap.xml</a>
+    </div>
+  </footer>
+
+  <script>
+    const ARTICLE_ID = '${a.id}';
+    const STATS_API_URL = '${STATS_API_URL}';
+    let currentViews = ${Number(a.views) || 0};
+    let currentLikes = ${Number(a.likes) || 0};
+    let likedIds = JSON.parse(localStorage.getItem('bg_likes') || '[]');
+    let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
+
+    function sendStat(action) {
+      if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
+      fetch(STATS_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ id: ARTICLE_ID, action })
+      }).catch(() => {});
+    }
+
+    function updateUi() {
+      document.getElementById('stat-views').textContent = '👁️ ' + currentViews + ' просмотров';
+      document.getElementById('stat-likes').textContent = currentLikes;
+      const btn = document.getElementById('btn-like');
+      const isLiked = likedIds.includes(Number(ARTICLE_ID)) || likedIds.includes(ARTICLE_ID);
+      btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition ' + (isLiked ? 'bg-rose-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-200');
+    }
+
+    function togglePageLike() {
+      const numId = Number(ARTICLE_ID);
+      const isLiked = likedIds.includes(numId) || likedIds.includes(ARTICLE_ID);
+      if (isLiked) {
+        likedIds = likedIds.filter(x => String(x) !== ARTICLE_ID);
+        currentLikes = Math.max(0, currentLikes - 1);
+        sendStat('unlike');
+      } else {
+        likedIds.push(numId);
+        currentLikes += 1;
+        sendStat('like');
+      }
+      localStorage.setItem('bg_likes', JSON.stringify(likedIds));
+      updateUi();
+    }
+
+    (async function initPageStats() {
+      if (STATS_API_URL && STATS_API_URL.startsWith('http')) {
+        try {
+          const res = await fetch(STATS_API_URL);
+          if (res.ok) {
+            const stats = await res.json();
+            if (stats[ARTICLE_ID]) {
+              currentViews = Math.max(currentViews, Number(stats[ARTICLE_ID].views) || 0);
+              currentLikes = Math.max(currentLikes, Number(stats[ARTICLE_ID].likes) || 0);
+            }
+          }
+        } catch (_) {}
+      }
+      if (!viewedIds.includes(ARTICLE_ID)) {
+        viewedIds.push(ARTICLE_ID);
+        sessionStorage.setItem('bg_viewed', JSON.stringify(viewedIds));
+        currentViews += 1;
+        sendStat('view');
+      }
+      updateUi();
+    })();
+  <\/script>
+</body>
+</html>`;
+    }
+
     function handleSecretLogoClick() {
       if (isAdminUnlocked) {
         switchMode('editor');
@@ -407,7 +601,6 @@ nav,
       }
     }
 
-    // Загрузка живых счётчиков из Google Таблицы
     async function loadRemoteStats() {
       if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
       try {
@@ -430,7 +623,6 @@ nav,
       }
     }
 
-    // Отправка просмотра или лайка в Google Таблицу (без CORS-блокировки)
     function sendStatEvent(id, action) {
       if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
       fetch(STATS_API_URL, {
@@ -455,21 +647,23 @@ nav,
       }
 
       const params = new URLSearchParams(window.location.search);
+      // Перенаправляем старые ссылки ?article=... на постоянную страницу p/{id}.html
+      const articleId = params.get('article');
+      if (articleId) {
+        const found = articles.find(a => String(a.id) === String(articleId) && a.status === 'published');
+        if (found) {
+          window.location.replace(`./p/${found.id}.html`);
+          return;
+        }
+      }
+
       if (params.get('editor') === '1' && !isAdminUnlocked) {
         promptAdminLogin();
       }
       updateAdminVisibility();
       renderCategories();
       renderAll();
-
-      // Подтягиваем реальные просмотры и лайки из облака
       await loadRemoteStats();
-
-      const articleId = params.get('article');
-      if (articleId) {
-        const found = articles.find(a => String(a.id) === String(articleId) && a.status === 'published');
-        if (found) openArticle(found.id);
-      }
     }
 
     function saveGhToken() {
@@ -478,7 +672,7 @@ nav,
       document.getElementById('gh-status').textContent = val ? '✅ Ключ сохранён' : '⚠️ Ключ очищен';
     }
 
-    async function syncToGitHub(commitMsg) {
+    async function syncToGitHub(commitMsg, articleToGenerate = null) {
       const token = localStorage.getItem('bg_gh_token');
       if (!token) {
         alert('Чтобы сохранить изменения на сайт для всех читателей, вставь свой GitHub Token в Кабинете Главреда!');
@@ -486,14 +680,52 @@ nav,
       }
       try {
         await updateGitHubFile('articles.json', JSON.stringify(articles, null, 2), commitMsg, token);
+
+        if (articleToGenerate && articleToGenerate.status === 'published') {
+          await updateGitHubFile(
+            `p/${articleToGenerate.id}.html`,
+            buildArticleHtmlPage(articleToGenerate),
+            `SEO page: p/${articleToGenerate.id}.html`,
+            token
+          );
+        }
+
         const today = new Date().toISOString().split('T')[0];
         const published = articles.filter(a => a.status === 'published');
-        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/?article=${a.id}</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
+        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
         const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
         await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: update sitemap.xml', token);
-        alert('✅ Сохранено на GitHub! Сайт и sitemap.xml обновятся через ~30 секунд.');
+        alert('✅ Сохранено на GitHub! Отдельная страница статьи и sitemap.xml обновятся через ~30 секунд.');
       } catch (err) {
         alert('Ошибка сохранения на GitHub: ' + err.message);
+      }
+    }
+
+    // Массовая генерация отдельных страниц p/{id}.html для всех старых опубликованных статей
+    async function rebuildAllSeoPages() {
+      const token = localStorage.getItem('bg_gh_token');
+      if (!token) {
+        alert('Сначала вставь и сохрани GitHub Token в Кабинете Главреда!');
+        return;
+      }
+      const published = articles.filter(a => a.status === 'published');
+      if (!published.length) {
+        alert('Опубликованных статей пока нет.');
+        return;
+      }
+      if (!confirm(`Сгенерировать отдельные SEO-страницы (p/id.html) для всех ${published.length} опубликованных статей и обновить sitemap.xml?`)) return;
+
+      try {
+        for (const a of published) {
+          await updateGitHubFile(`p/${a.id}.html`, buildArticleHtmlPage(a), `SEO page: p/${a.id}.html`, token);
+        }
+        const today = new Date().toISOString().split('T')[0];
+        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
+        const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
+        await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: rebuild all article pages & sitemap.xml', token);
+        alert(`🎉 Готово! Создано ${published.length} отдельных страниц в папке p/ и обновлён sitemap.xml.`);
+      } catch (err) {
+        alert('Ошибка при генерации страниц: ' + err.message);
       }
     }
 
@@ -576,6 +808,10 @@ nav,
       renderAll();
     }
 
+    function openArticle(id) {
+      window.location.href = `./p/${id}.html`;
+    }
+
     function renderAll() {
       const published = articles.filter(a => a.status === 'published');
       const drafts = articles.filter(a => a.status === 'draft');
@@ -599,8 +835,8 @@ nav,
       const featuredContainer = document.getElementById('featured-container');
       if (featured) {
         featuredContainer.innerHTML = `
-          <article onclick="openArticle(${featured.id})" class="group cursor-pointer relative rounded-2xl overflow-hidden border border-purple-500/30 bg-slate-900 shadow-xl">
-            <div class="relative h-64 sm:h-80 w-full overflow-hidden bg-gradient-to-br from-purple-900 to-slate-900">
+          <article class="group relative rounded-2xl overflow-hidden border border-purple-500/30 bg-slate-900 shadow-xl">
+            <a href="./p/${featured.id}.html" class="block relative h-64 sm:h-80 w-full overflow-hidden bg-gradient-to-br from-purple-900 to-slate-900">
               <img src="${featured.image}" alt="${featured.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'" />
               <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
               <div class="absolute top-4 left-4 flex items-center gap-2">
@@ -615,7 +851,7 @@ nav,
                   <span>👁️ ${featured.views || 0} • ❤️ ${featured.likes || 0}</span>
                 </div>
               </div>
-            </div>
+            </a>
           </article>`;
       } else {
         featuredContainer.innerHTML = '';
@@ -632,8 +868,8 @@ nav,
           </div>`;
       } else {
         grid.innerHTML = list.map(a => `
-          <article onclick="openArticle(${a.id})" class="group cursor-pointer rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 overflow-hidden flex flex-col justify-between transition shadow-lg">
-            <div>
+          <article class="group rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 overflow-hidden flex flex-col justify-between transition shadow-lg">
+            <a href="./p/${a.id}.html" class="block">
               <div class="relative h-44 w-full overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950">
                 <img src="${a.image}" alt="${a.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'" />
                 <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-lg bg-slate-950/85 text-cyan-300 text-[11px] font-semibold border border-cyan-500/30">${a.category}</span>
@@ -643,7 +879,7 @@ nav,
                 <h3 class="text-base font-bold text-white group-hover:text-cyan-300 transition line-clamp-2 leading-snug">${a.title}</h3>
                 <p class="text-xs text-slate-400 mt-2 line-clamp-2">${a.excerpt}</p>
               </div>
-            </div>
+            </a>
             <div class="px-4 pb-4 pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/70">
               <span>${a.date}</span>
               <div class="flex items-center gap-3">
@@ -658,98 +894,14 @@ nav,
       const pop = [...published].sort((x, y) => (y.views || 0) - (x.views || 0)).slice(0, 5);
       document.getElementById('popular-list').innerHTML = pop.length
         ? pop.map((a, idx) => `
-          <div onclick="openArticle(${a.id})" class="cursor-pointer group flex items-start gap-3">
+          <a href="./p/${a.id}.html" class="group flex items-start gap-3">
             <span class="font-gamer text-sm font-black text-purple-400/80">0${idx + 1}</span>
             <div>
               <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition line-clamp-2">${a.title}</div>
               <div class="text-[11px] text-slate-500 mt-0.5">${a.category} • 👁️ ${a.views || 0}</div>
             </div>
-          </div>`).join('')
+          </a>`).join('')
         : '<div>Популярные материалы появятся после первых публикаций.</div>';
-    }
-
-    function openArticle(id, isRefresh = false) {
-      const a = articles.find(x => x.id === id);
-      if (!a) return;
-
-      // Засчитываем +1 просмотр только 1 раз за сессию браузера
-      if (!isRefresh && !viewedIds.includes(id)) {
-        viewedIds.push(id);
-        sessionStorage.setItem('bg_viewed', JSON.stringify(viewedIds));
-        a.views = (a.views || 0) + 1;
-        sendStatEvent(id, 'view');
-      }
-
-      history.replaceState(null, '', `?article=${a.id}`);
-      document.title = `${a.title} — BUGROVGAMES`;
-
-      const schemaEl = document.getElementById('seo-schema');
-      schemaEl.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": a.score ? "Review" : "NewsArticle",
-        "headline": a.title,
-        "datePublished": a.date,
-        "author": { "@type": "Person", "name": a.author || "Редакция BUGROVGAMES" },
-        "publisher": { "@type": "Organization", "name": "BUGROVGAMES" },
-        "image": [a.image]
-      });
-
-      const isLiked = likedIds.includes(a.id);
-      const paragraphs = Array.isArray(a.content) ? a.content : String(a.content || '').split('\n\n');
-      document.getElementById('modal-article-content').innerHTML = `
-        <div class="relative h-64 sm:h-80 bg-slate-950">
-          <img src="${a.image}" alt="${a.title}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
-          <button onclick="closeArticleModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-950/80 text-white hover:bg-purple-600 flex items-center justify-center">✕</button>
-          <div class="absolute bottom-4 left-6 right-6">
-            <span class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold">${a.category}</span>
-            ${a.score ? `<span class="ml-2 px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-xs font-black">Оценка: ${a.score} / 10</span>` : ''}
-            <h1 class="text-xl sm:text-2xl font-extrabold text-white mt-2">${a.title}</h1>
-          </div>
-        </div>
-        <div class="p-6 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 pb-3 border-b border-slate-800">
-            <span>✍️ ${a.author} • 📅 ${a.date}</span>
-            <span>👁️ ${a.views || 0} просмотров</span>
-          </div>
-          <p class="text-sm sm:text-base font-semibold text-cyan-200/90">${a.excerpt}</p>
-          <div class="space-y-3 text-sm sm:text-base text-slate-200 leading-relaxed">
-            ${paragraphs.map(p => `<p>${p}</p>`).join('')}
-          </div>
-          <div class="flex flex-wrap gap-1.5 pt-3">
-            ${(a.tags || []).map(t => `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300">#${t}</span>`).join('')}
-          </div>
-          <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
-            <button onclick="likeArticle(${a.id})" class="px-4 py-2 rounded-xl text-xs font-bold transition ${isLiked ? 'bg-rose-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-200'}">
-              ❤️ Нравится (${a.likes || 0})
-            </button>
-            <button onclick="closeArticleModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Закрыть</button>
-          </div>
-        </div>`;
-      document.getElementById('article-modal').classList.remove('hidden');
-    }
-
-    function closeArticleModal() {
-      document.getElementById('article-modal').classList.add('hidden');
-      document.title = 'BUGROVGAMES — Главные игровые новости, обзоры и инсайды';
-      history.replaceState(null, '', '/');
-      renderAll();
-    }
-
-    function likeArticle(id) {
-      const a = articles.find(x => x.id === id);
-      if (!a) return;
-      if (likedIds.includes(id)) {
-        likedIds = likedIds.filter(x => x !== id);
-        a.likes = Math.max(0, (a.likes || 1) - 1);
-        sendStatEvent(id, 'unlike');
-      } else {
-        likedIds.push(id);
-        a.likes = (a.likes || 0) + 1;
-        sendStatEvent(id, 'like');
-      }
-      localStorage.setItem('bg_likes', JSON.stringify(likedIds));
-      openArticle(id, true);
     }
 
     function renderEditor() {
@@ -776,12 +928,17 @@ nav,
           </div>`).join('')
         : '<div class="col-span-full text-xs text-slate-400 p-5 rounded-2xl bg-slate-900/50 border border-slate-800">Очередь черновиков пуста. Когда робот-журналист сгенерирует новости, они появятся здесь.</div>';
 
-      document.getElementById('published-admin-list').innerHTML = published.length
+      document.getElementById('published-admin-list').innerHTML = `
+        <div class="mb-3">
+          <button onclick="rebuildAllSeoPages()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white transition">
+            🔄 Пересобрать отдельные SEO-страницы (p/id.html) для всех старых статей
+          </button>
+        </div>` + (published.length
         ? published.map(p => `
           <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3.5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <span class="text-[11px] text-cyan-400 font-semibold">[${p.category}]</span>
-              <span class="text-sm font-bold text-white ml-1">${p.title}</span>
+              <a href="./p/${p.id}.html" target="_blank" class="text-sm font-bold text-white hover:text-cyan-300 ml-1">${p.title} ↗</a>
               <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0} • ❤️ ${p.likes || 0}</div>
             </div>
             <div class="flex items-center gap-2">
@@ -789,7 +946,7 @@ nav,
               <button onclick="deleteArticle(${p.id})" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-800 text-xs text-rose-300">Удалить</button>
             </div>
           </div>`).join('')
-        : '<div class="text-xs text-slate-400">Опубликованных статей пока нет.</div>';
+        : '<div class="text-xs text-slate-400">Опубликованных статей пока нет.</div>');
     }
 
     function openNewArticleModal() {
@@ -834,6 +991,7 @@ nav,
       const tags = document.getElementById('edit-tags').value.split(',').map(s => s.trim()).filter(Boolean);
       const today = new Date().toISOString().split('T')[0];
 
+      let targetArticle = null;
       if (idVal) {
         const idx = articles.findIndex(x => String(x.id) === String(idVal));
         if (idx !== -1) {
@@ -842,9 +1000,10 @@ nav,
             title, category, score: score || undefined, image, excerpt, content, tags,
             status: publishNow ? 'published' : articles[idx].status
           };
+          targetArticle = articles[idx];
         }
       } else {
-        articles.unshift({
+        targetArticle = {
           id: Date.now(),
           status: publishNow ? 'published' : 'draft',
           category,
@@ -859,12 +1018,13 @@ nav,
           likes: 0,
           tags,
           isFeatured: articles.filter(a => a.status === 'published').length === 0
-        });
+        };
+        articles.unshift(targetArticle);
       }
       closeEditModal();
       renderEditor();
       renderAll();
-      await syncToGitHub(publishNow ? `Publish: ${title}` : `Save draft: ${title}`);
+      await syncToGitHub(publishNow ? `Publish: ${title}` : `Save draft: ${title}`, targetArticle);
     }
 
     async function publishDraft(id) {
@@ -874,7 +1034,7 @@ nav,
       a.date = new Date().toISOString().split('T')[0];
       renderEditor();
       renderAll();
-      await syncToGitHub(`Publish article: ${a.title}`);
+      await syncToGitHub(`Publish article: ${a.title}`, a);
     }
 
     async function deleteArticle(id) {
