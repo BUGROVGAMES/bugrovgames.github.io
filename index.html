@@ -349,6 +349,7 @@ nav,
     const REPO_NAME = 'bugrovgames.github.io';
     const SITE_URL = 'https://bugrovgames.com';
     const EDITOR_PIN = '7788'; // Твой личный PIN для входа в Кабинет Главреда
+    const STATS_API_URL = 'https://script.google.com/macros/s/AKfycbxLl9QsiqFoadvm7NwVo96WlhcunAPQWryiKaHSFhHALwWuD6--kngTyaJ7me6nOMOgEw/exec';
     const CATEGORIES = ['Все', 'ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
 
     let articles = [];
@@ -357,6 +358,7 @@ nav,
     let showBookmarksOnly = false;
     let bookmarks = JSON.parse(localStorage.getItem('bg_bookmarks') || '[]');
     let likedIds = JSON.parse(localStorage.getItem('bg_likes') || '[]');
+    let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
     let isAdminUnlocked = sessionStorage.getItem('bg_admin_unlocked') === '1';
     let secretClickCount = 0;
     let secretClickTimer = null;
@@ -405,6 +407,40 @@ nav,
       }
     }
 
+    // Загрузка живых счётчиков из Google Таблицы
+    async function loadRemoteStats() {
+      if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
+      try {
+        const res = await fetch(STATS_API_URL);
+        if (!res.ok) return;
+        const stats = await res.json();
+        articles.forEach(a => {
+          const s = stats[String(a.id)];
+          if (s) {
+            a.views = Math.max(Number(a.views) || 0, Number(s.views) || 0);
+            a.likes = Math.max(Number(a.likes) || 0, Number(s.likes) || 0);
+          }
+        });
+        renderAll();
+        if (isAdminUnlocked && !document.getElementById('editor-view').classList.contains('hidden')) {
+          renderEditor();
+        }
+      } catch (e) {
+        console.warn('Не удалось загрузить статистику:', e);
+      }
+    }
+
+    // Отправка просмотра или лайка в Google Таблицу (без CORS-блокировки)
+    function sendStatEvent(id, action) {
+      if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
+      fetch(STATS_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ id: String(id), action })
+      }).catch(() => {});
+    }
+
     async function init() {
       const savedToken = localStorage.getItem('bg_gh_token');
       if (savedToken) {
@@ -425,6 +461,9 @@ nav,
       updateAdminVisibility();
       renderCategories();
       renderAll();
+
+      // Подтягиваем реальные просмотры и лайки из облака
+      await loadRemoteStats();
 
       const articleId = params.get('article');
       if (articleId) {
@@ -608,6 +647,7 @@ nav,
             <div class="px-4 pb-4 pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/70">
               <span>${a.date}</span>
               <div class="flex items-center gap-3">
+                <span>👁️ ${a.views || 0}</span>
                 <span>❤️ ${a.likes || 0}</span>
                 <button onclick="toggleBookmark(${a.id}, event)" class="hover:text-purple-300">${bookmarks.includes(a.id) ? '🔖' : '📑'}</button>
               </div>
@@ -628,10 +668,18 @@ nav,
         : '<div>Популярные материалы появятся после первых публикаций.</div>';
     }
 
-    function openArticle(id) {
+    function openArticle(id, isRefresh = false) {
       const a = articles.find(x => x.id === id);
       if (!a) return;
-      a.views = (a.views || 0) + 1;
+
+      // Засчитываем +1 просмотр только 1 раз за сессию браузера
+      if (!isRefresh && !viewedIds.includes(id)) {
+        viewedIds.push(id);
+        sessionStorage.setItem('bg_viewed', JSON.stringify(viewedIds));
+        a.views = (a.views || 0) + 1;
+        sendStatEvent(id, 'view');
+      }
+
       history.replaceState(null, '', `?article=${a.id}`);
       document.title = `${a.title} — BUGROVGAMES`;
 
@@ -662,7 +710,7 @@ nav,
         <div class="p-6 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 pb-3 border-b border-slate-800">
             <span>✍️ ${a.author} • 📅 ${a.date}</span>
-            <span>👁️ ${a.views} просмотров</span>
+            <span>👁️ ${a.views || 0} просмотров</span>
           </div>
           <p class="text-sm sm:text-base font-semibold text-cyan-200/90">${a.excerpt}</p>
           <div class="space-y-3 text-sm sm:text-base text-slate-200 leading-relaxed">
@@ -694,12 +742,14 @@ nav,
       if (likedIds.includes(id)) {
         likedIds = likedIds.filter(x => x !== id);
         a.likes = Math.max(0, (a.likes || 1) - 1);
+        sendStatEvent(id, 'unlike');
       } else {
         likedIds.push(id);
         a.likes = (a.likes || 0) + 1;
+        sendStatEvent(id, 'like');
       }
       localStorage.setItem('bg_likes', JSON.stringify(likedIds));
-      openArticle(id);
+      openArticle(id, true);
     }
 
     function renderEditor() {
@@ -732,7 +782,7 @@ nav,
             <div>
               <span class="text-[11px] text-cyan-400 font-semibold">[${p.category}]</span>
               <span class="text-sm font-bold text-white ml-1">${p.title}</span>
-              <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0} • ❤️ ${p.likes || 0}</div>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="openEditModal(${p.id})" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white">✏️ Редактировать</button>
