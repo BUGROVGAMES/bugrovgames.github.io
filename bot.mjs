@@ -298,32 +298,48 @@ async function callGemini(model, prompt, useGoogleSearch) {
   return data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
 }
 
+function safeParseGeminiJson(rawText) {
+  if (!rawText) return null;
+  let cleaned = rawText.replace(/```json|```/gi, '').trim();
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+  cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
+  try {
+    const obj = JSON.parse(cleaned);
+    return obj && obj.title && obj.content ? obj : null;
+  } catch (_) {
+    return null;
+  }
+}
+
 async function run() {
   console.log('Целевая рубрика запуска:', TARGET_CATEGORY);
   const models = await getAvailableModels();
   const rssContext = await fetchFreshRssNews();
-  let rawText = '';
+  let parsed = null;
 
   for (const model of models) {
     try {
-      rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), true);
-      if (rawText) break;
+      const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), true);
+      parsed = safeParseGeminiJson(rawText);
+      if (parsed) break;
     } catch (_) {}
   }
 
-  if (!rawText) {
+  if (!parsed) {
     for (const model of models) {
       try {
-        rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), false);
-        if (rawText) break;
+        const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), false);
+        parsed = safeParseGeminiJson(rawText);
+        if (parsed) break;
       } catch (_) {}
     }
   }
 
-  if (!rawText) throw new Error('Не удалось получить ответ от Gemini.');
-
-  const cleanJson = rawText.replace(/```json|```/g, '').trim();
-  const parsed = JSON.parse(cleanJson);
+  if (!parsed) throw new Error('Не удалось получить корректный JSON от Gemini.');
 
   // Легальный подбор уникальной обложки (без повторов последних 15 статей):
   let finalImage = '';
