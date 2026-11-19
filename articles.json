@@ -1,7 +1,7 @@
 [
   {
     "id": 1795115164310,
-    "status": "draft",
+    "status": "published",
     "category": "Обзоры",
     "title": "World of Warcraft: Forever — триумфальное возвращение классики и новый рекорд онлайна спустя 15 лет",
     "excerpt": "Масштабный запуск World of Warcraft: Forever от Blizzard привлек рекордное количество игроков, обогнав показатели популярности классических серверов за последние полтора десятка лет.",
@@ -16,7 +16,7 @@
       "eurogamer.net",
       "gamespot.com"
     ],
-    "image": "https://images.unsplash.com/photo-1580327344181-c1163234e5a0?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/Screenshot_20261119_214021_YouTube.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-19",
     "views": 0,
@@ -540,7 +540,7 @@
     "image": "https://c.files.bbci.co.uk/6ab0/live/49c33180-6bce-11f1-a94c-73f00a91c697.jpg",
     "author": "AI-Репортёр BUGROVGAMES",
     "date": "2026-11-17",
-    "views": 2,
+    "views": 3,
     "likes": 0,
     "tags": [
       "GTA 6",
