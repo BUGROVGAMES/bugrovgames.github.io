@@ -52,8 +52,10 @@ nav,
 }
 
 /* Адаптация под экраны телефонов */
+/* Адаптация под экраны телефонов */
 @media (max-width: 640px) {
   /* Делаем главную карточку гибкой по высоте, чтобы заголовок не наезжал на плашки */
+  #featured-container article > a,
   #featured-container article > div {
     height: auto !important;
     min-height: 17.5rem !important;
@@ -62,18 +64,22 @@ nav,
     justify-content: space-between !important;
   }
 
+  #featured-container article > a > div:nth-child(3),
   #featured-container article > div > div:nth-child(3) {
     position: relative !important;
     top: auto !important;
     left: auto !important;
     padding: 1rem 1rem 0 1rem !important;
     flex-wrap: wrap !important;
+    z-index: 10 !important;
   }
 
+  #featured-container article > a > div:nth-child(4),
   #featured-container article > div > div:nth-child(4) {
     position: relative !important;
     bottom: auto !important;
     padding: 1.25rem 1rem 1rem 1rem !important;
+    z-index: 10 !important;
   }
 
   #featured-container h2 {
