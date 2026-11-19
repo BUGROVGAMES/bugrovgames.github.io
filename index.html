@@ -206,6 +206,7 @@ nav,
       <div class="lg:col-span-8 space-y-6">
         <div id="featured-container"></div>
         <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+        <div id="pagination-controls" class="pt-2"></div>
       </div>
 
       <!-- ПРАВЫЙ САЙДБАР -->
@@ -288,7 +289,6 @@ nav,
   </main>
 
   <!-- ПОДВАЛ -->
-  <!-- ПОДВАЛ -->
   <footer class="border-t border-slate-800/80 bg-slate-950/90 py-6 mt-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 space-y-3 text-xs text-slate-400">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -370,9 +370,12 @@ nav,
     const EDITOR_PIN = '7788'; // Твой личный PIN для входа в Кабинет Главреда
     const STATS_API_URL = 'https://script.google.com/macros/s/AKfycbxLl9QsiqFoadvm7NwVo96WlhcunAPQWryiKaHSFhHALwWuD6--kngTyaJ7me6nOMOgEw/exec';
     const CATEGORIES = ['Все', 'ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
+    const PAGE_SIZE_FIRST = 9; // 1 главная тема + 8 карточек (4 ряда по 2)
+    const PAGE_SIZE_OTHER = 10; // 10 карточек (5 рядов по 2) на остальных страницах
 
     let articles = [];
     let currentCategory = 'Все';
+    let currentPage = 1;
     let searchQuery = '';
     let showBookmarksOnly = false;
     let bookmarks = JSON.parse(localStorage.getItem('bg_bookmarks') || '[]');
@@ -673,6 +676,17 @@ nav,
       }).catch(() => {});
     }
 
+    function syncUrlParams() {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('article');
+      if (currentCategory && currentCategory !== 'Все') url.searchParams.set('cat', currentCategory);
+      else url.searchParams.delete('cat');
+      if (currentPage > 1) url.searchParams.set('page', String(currentPage));
+      else url.searchParams.delete('page');
+      const nextUrl = url.pathname + (url.search ? url.search : '');
+      history.replaceState(null, '', nextUrl);
+    }
+
     async function init() {
       const savedToken = localStorage.getItem('bg_gh_token');
       if (savedToken) {
@@ -695,6 +709,15 @@ nav,
           window.location.replace(`./p/${found.id}.html`);
           return;
         }
+      }
+
+      const catParam = params.get('cat');
+      if (catParam && CATEGORIES.includes(catParam)) {
+        currentCategory = catParam;
+      }
+      const pageParam = parseInt(params.get('page'), 10);
+      if (pageParam && pageParam > 0) {
+        currentPage = pageParam;
       }
 
       if (params.get('editor') === '1' && !isAdminUnlocked) {
@@ -796,7 +819,9 @@ nav,
 
     function selectCategory(cat) {
       currentCategory = cat;
+      currentPage = 1;
       showBookmarksOnly = false;
+      syncUrlParams();
       switchMode('reader');
       renderCategories();
       renderAll();
@@ -804,20 +829,35 @@ nav,
 
     function handleSearch(val) {
       searchQuery = val.toLowerCase().trim();
+      currentPage = 1;
+      syncUrlParams();
       switchMode('reader');
       renderAll();
     }
 
     function toggleBookmarksFilter() {
       showBookmarksOnly = !showBookmarksOnly;
+      currentPage = 1;
+      syncUrlParams();
       switchMode('reader');
       renderCategories();
       renderAll();
     }
 
+    function goToPage(page) {
+      currentPage = page;
+      syncUrlParams();
+      renderAll();
+      const target = document.getElementById('reader-view');
+      if (target) {
+        window.scrollTo({ top: Math.max(0, target.offsetTop - 20), behavior: 'smooth' });
+      }
+    }
+
     function resetHome(e) {
       if (e) e.preventDefault();
       currentCategory = 'Все';
+      currentPage = 1;
       searchQuery = '';
       showBookmarksOnly = false;
       document.getElementById('search-input').value = '';
@@ -852,6 +892,56 @@ nav,
       window.location.href = `./p/${id}.html`;
     }
 
+    function renderPagination(totalItems, totalPages) {
+      const container = document.getElementById('pagination-controls');
+      if (!container) return;
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      const pages = [];
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+          pages.push(i);
+        } else if (pages[pages.length - 1] !== '...') {
+          pages.push('...');
+        }
+      }
+
+      const pageButtons = pages.map(p => {
+        if (p === '...') {
+          return `<span class="px-2.5 py-2 text-xs text-slate-500 select-none">…</span>`;
+        }
+        const isActive = p === currentPage;
+        return `<button onclick="goToPage(${p})" class="min-w-[36px] px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${
+          isActive
+            ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/35 border border-purple-400/50'
+            : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-purple-500/40'
+        }">${p}</button>`;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="rounded-2xl bg-slate-900/75 border border-slate-800/90 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-xs text-slate-400">
+            Страница <span class="text-white font-bold">${currentPage}</span> из <span class="text-white font-bold">${totalPages}</span> • Всего материалов: <span class="text-cyan-300 font-semibold">${totalItems}</span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap justify-center">
+            <button onclick="goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} class="px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition ${
+              currentPage <= 1
+                ? 'bg-slate-950/50 text-slate-600 border-slate-800/60 cursor-not-allowed'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-cyan-400/50'
+            }">← Назад</button>
+            ${pageButtons}
+            <button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''} class="px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition ${
+              currentPage >= totalPages
+                ? 'bg-slate-950/50 text-slate-600 border-slate-800/60 cursor-not-allowed'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-cyan-400/50'
+            }">Дальше →</button>
+          </div>
+        </div>`;
+    }
+
     function renderAll() {
       const published = articles.filter(a => a.status === 'published');
       const drafts = articles.filter(a => a.status === 'draft');
@@ -868,10 +958,29 @@ nav,
         return true;
       });
 
-      const featured = (!searchQuery && !showBookmarksOnly && currentCategory === 'Все')
-        ? (filtered.find(a => a.isFeatured) || filtered[0])
-        : null;
+      const hasHeroOnFirstPage = (!searchQuery && !showBookmarksOnly && currentCategory === 'Все' && filtered.length > 0);
+      const heroArticle = hasHeroOnFirstPage ? (filtered.find(a => a.isFeatured) || filtered[0]) : null;
+      const orderedItems = heroArticle
+        ? [heroArticle, ...filtered.filter(a => a.id !== heroArticle.id)]
+        : filtered;
 
+      const totalItems = orderedItems.length;
+      let totalPages = 1;
+      if (totalItems > PAGE_SIZE_FIRST) {
+        totalPages = 1 + Math.ceil((totalItems - PAGE_SIZE_FIRST) / PAGE_SIZE_OTHER);
+      }
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      let pageSlice = [];
+      if (currentPage === 1) {
+        pageSlice = orderedItems.slice(0, PAGE_SIZE_FIRST);
+      } else {
+        const startIdx = PAGE_SIZE_FIRST + (currentPage - 2) * PAGE_SIZE_OTHER;
+        pageSlice = orderedItems.slice(startIdx, startIdx + PAGE_SIZE_OTHER);
+      }
+
+      const featured = (currentPage === 1 && heroArticle) ? pageSlice[0] : null;
       const featuredContainer = document.getElementById('featured-container');
       if (featured) {
         featuredContainer.innerHTML = `
@@ -897,7 +1006,7 @@ nav,
         featuredContainer.innerHTML = '';
       }
 
-      const list = featured ? filtered.filter(a => a.id !== featured.id) : filtered;
+      const list = featured ? pageSlice.slice(1) : pageSlice;
       const grid = document.getElementById('articles-grid');
       if (!list.length && !featured) {
         grid.innerHTML = `
@@ -930,6 +1039,8 @@ nav,
             </div>
           </article>`).join('');
       }
+
+      renderPagination(totalItems, totalPages);
 
       const pop = [...published].sort((x, y) => (y.views || 0) - (x.views || 0)).slice(0, 5);
       document.getElementById('popular-list').innerHTML = pop.length
