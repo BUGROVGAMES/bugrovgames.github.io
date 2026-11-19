@@ -1,7 +1,7 @@
 [
   {
     "id": 1795051255681,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Сделка Microsoft и Take-Two по облачному стримингу Grand Theft Auto 6 может расширить рынок Xbox на 30%",
     "excerpt": "Аналитики Ampere Analysis оценили влияние партнерства Microsoft и Take-Two Interactive на доступность Grand Theft Auto 6 для владельцев устаревших консолей через облачный сервис.",
@@ -50,7 +50,7 @@
     "image": "https://cdn.akamai.steamstatic.com/steam/apps/1276800/header.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-18",
-    "views": 0,
+    "views": 2,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -82,7 +82,7 @@
     "image": "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-18",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -355,7 +355,7 @@
     "image": "https://c.files.bbci.co.uk/6ab0/live/49c33180-6bce-11f1-a94c-73f00a91c697.jpg",
     "author": "AI-Репортёр BUGROVGAMES",
     "date": "2026-11-17",
-    "views": 1,
+    "views": 2,
     "likes": 0,
     "tags": [
       "GTA 6",
