@@ -7,7 +7,10 @@ if (!GEMINI_API_KEY) {
 }
 
 const articles = JSON.parse(fs.readFileSync('articles.json', 'utf8'));
-const existingTitles = articles.slice(0, 40).map(a => a.title).join(' | ');
+const recentArticles = articles.slice(0, 35);
+const existingSummaries = recentArticles
+  .map(a => `«${a.title}» [теги: ${(a.tags || []).join(', ')}] — ${(a.excerpt || '').slice(0, 120)}`)
+  .join('\n- ');
 const recentImages = new Set(articles.slice(0, 15).map(a => a.image).filter(Boolean));
 
 const ALL_CATEGORIES = ['ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
@@ -230,7 +233,7 @@ async function findSteamCover(gameTitle) {
   return null;
 }
 
-function buildPrompt(rssContext, targetCategory) {
+function buildPrompt(rssContext, targetCategory, rejectedTopics = []) {
   const timeWindow = ['Обзоры', 'Киберспорт'].includes(targetCategory) ? '24–72 часа' : '24–48 часов';
 
   return `Ты — выпускающий редактор и ведущий аналитик игрового медиапортала BUGROVGAMES.
@@ -244,7 +247,10 @@ ${rssContext ? `СВЕЖАЯ СВОДКА ИЗ RSS-ЛЕНТ:\n${rssContext}\n\n`
 4. СОЦСЕТЬ X (комментарии геймдиректоров, инсайдеров, официальные треды): ${SOURCES_BASE.x_accounts.join(', ')}
 
 ЖЁСТКИЕ РЕДАКЦИОННЫЕ И ЮРИДИЧЕСКИЕ ПРАВИЛА:
-1. ЦЕЛЕВАЯ РУБРИКА И УНИКАЛЬНОСТЬ: Подбери самую интересную свежую тему именно для рубрики «${targetCategory}» и укажи в поле "category" значение "${targetCategory}". Тема НЕ ДОЛЖНА повторять уже существующие статьи на сайте: [${existingTitles || 'база пока пуста'}].
+1. ЦЕЛЕВАЯ РУБРИКА И УНИКАЛЬНОСТЬ (КРИТИЧНО): Подбери свежую тему для рубрики «${targetCategory}» и укажи в "category" значение "${targetCategory}". КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО писать о событиях, фактах или инфоповодах, которые уже освещались в последних статьях и черновиках на сайте (даже под другим заголовком, с другими цифрами V/VI или с акцентом на другую деталь того же события!).
+УЖЕ ОСВЕЩЁННЫЕ ТЕМЫ (НЕ ПОВТОРЯТЬ):
+- ${existingSummaries || 'база пока пуста'}
+${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ ДУБЛИ (ВЫБЕРИ ДРУГУЮ ИГРУ И ДРУГОЙ ИНФОПОВОД):\n- ${rejectedTopics.join('\n- ')}\n` : ''}
 2. ПРАВИЛО ДВОЙНОГО ФАКТЧЕКИНГА: Опирайся на факты, подтверждённые минимум в ДВУХ независимых источниках из сводки, баз данных (SteamDB, Metacritic, OpenCritic, HLTV, Liquipedia) или официальных заявлениях студий/инсайдеров. Перечисли названия источников в поле sourcesUsed.
 3. ЗАПРЕТ НА КОПИПАСТ И SEO-ПРАВИЛО: Категорически запрещено дословно переводить чужую статью абзац за абзацем. Извлеки только сухие факты, цифры и официальные цитаты и напиши полностью самостоятельный журналистский текст на русском языке с упоминанием первоисточников в тексте. В заголовке и первом абзаце обязательно укажи официальное английское название игры, студии или киберспортивной дисциплины.
 4. ОБЯЗАТЕЛЬНАЯ СТРУКТУРА (4 абзаца):
@@ -298,6 +304,73 @@ async function callGemini(model, prompt, useGoogleSearch) {
   return data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
 }
 
+function normalizeTokens(text) {
+  const stopWords = new Set([
+    'и', 'в', 'во', 'не', 'что', 'он', 'на', 'я', 'с', 'со', 'как', 'а', 'то', 'все', 'она',
+    'так', 'его', 'но', 'да', 'ты', 'к', 'у', 'же', 'вы', 'за', 'бы', 'по', 'только', 'ее',
+    'мне', 'было', 'вот', 'от', 'меня', 'еще', 'нет', 'о', 'из', 'ему', 'теперь', 'когда',
+    'даже', 'ну', 'вдруг', 'ли', 'если', 'уже', 'или', 'ни', 'быть', 'был', 'него', 'до',
+    'вас', 'нибудь', 'опять', 'уж', 'вам', 'ведь', 'там', 'потом', 'себя', 'ничего', 'ей',
+    'может', 'они', 'тут', 'где', 'есть', 'надо', 'ней', 'для', 'мы', 'тебя', 'их', 'чем',
+    'была', 'сам', 'чтоб', 'без', 'будто', 'чего', 'раз', 'тоже', 'себе', 'под', 'будет',
+    'the', 'and', 'for', 'with', 'from', 'that', 'this', 'are', 'was', 'were', 'has', 'have',
+    'игра', 'игры', 'игр', 'релиз', 'выход', 'обзор', 'новости', 'студии', 'разработчики', 'игроков'
+  ]);
+  const normalized = String(text || '')
+    .toLowerCase()
+    .replace(/\bvi\b/g, '6')
+    .replace(/\bv\b/g, '5')
+    .replace(/\biv\b/g, '4')
+    .replace(/\biii\b/g, '3')
+    .replace(/\bii\b/g, '2')
+    .replace(/[^a-zа-яё0-9\s]/gi, ' ');
+
+  return new Set(
+    normalized
+      .split(/\s+/)
+      .filter(w => w.length >= 3 && !stopWords.has(w))
+  );
+}
+
+function jaccardSimilarity(setA, setB) {
+  if (!setA.size || !setB.size) return 0;
+  let intersection = 0;
+  for (const item of setA) {
+    if (setB.has(item)) intersection++;
+  }
+  const minSize = Math.min(setA.size, setB.size);
+  return intersection / minSize;
+}
+
+function findDuplicateArticle(candidate) {
+  const candTitleTokens = normalizeTokens(candidate.title);
+  const candFullTokens = normalizeTokens([
+    candidate.title,
+    candidate.excerpt,
+    Array.isArray(candidate.content) ? candidate.content[0] : '',
+    (candidate.tags || []).join(' '),
+    candidate.exactGameName !== 'none' ? candidate.exactGameName : ''
+  ].join(' '));
+
+  for (const existing of recentArticles) {
+    const exTitleTokens = normalizeTokens(existing.title);
+    const exFullTokens = normalizeTokens([
+      existing.title,
+      existing.excerpt,
+      Array.isArray(existing.content) ? existing.content[0] : '',
+      (existing.tags || []).join(' ')
+    ].join(' '));
+
+    const titleSim = jaccardSimilarity(candTitleTokens, exTitleTokens);
+    const fullSim = jaccardSimilarity(candFullTokens, exFullTokens);
+
+    if (titleSim >= 0.45 || fullSim >= 0.35) {
+      return existing.title;
+    }
+  }
+  return null;
+}
+
 function safeParseGeminiJson(rawText) {
   if (!rawText) return null;
   let cleaned = rawText.replace(/```json|```/gi, '').trim();
@@ -319,27 +392,30 @@ async function run() {
   console.log('Целевая рубрика запуска:', TARGET_CATEGORY);
   const models = await getAvailableModels();
   const rssContext = await fetchFreshRssNews();
+  const rejectedTopics = [];
   let parsed = null;
 
-  for (const model of models) {
-    try {
-      const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), true);
-      parsed = safeParseGeminiJson(rawText);
-      if (parsed) break;
-    } catch (_) {}
-  }
-
-  if (!parsed) {
+  for (let attempt = 1; attempt <= 3 && !parsed; attempt++) {
     for (const model of models) {
       try {
-        const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY), false);
-        parsed = safeParseGeminiJson(rawText);
-        if (parsed) break;
+        const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY, rejectedTopics), attempt === 1);
+        const candidate = safeParseGeminiJson(rawText);
+        if (!candidate) continue;
+
+        const duplicateOf = findDuplicateArticle(candidate);
+        if (duplicateOf) {
+          console.log(`Отклонён дубль (похоже на «${duplicateOf}»): ${candidate.title}`);
+          rejectedTopics.push(`${candidate.title} (дубль статьи «${duplicateOf}»)`);
+          break;
+        }
+
+        parsed = candidate;
+        break;
       } catch (_) {}
     }
   }
 
-  if (!parsed) throw new Error('Не удалось получить корректный JSON от Gemini.');
+  if (!parsed) throw new Error('Не удалось сгенерировать уникальную статью без дублей.');
 
   // Легальный подбор уникальной обложки (без повторов последних 15 статей):
   let finalImage = '';
