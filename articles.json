@@ -1,7 +1,7 @@
 [
   {
     "id": 1795084834410,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Grand Theft Auto V установила новый рекорд продаж на фоне беспрецедентного ажиотажа в индустрии",
     "excerpt": "Пока миллионы геймеров по всему миру обсуждают запуск новых проектов Take-Two Interactive, бессмертный хит Rockstar Games продолжает ставить исторические рекорды по финансовым показателям и активности аудитории.",
@@ -16,7 +16,7 @@
       "IGN",
       "GameSpot"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/3240220/header.jpg",
+    "image": "./gta6_cover3.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-19",
     "views": 0,
