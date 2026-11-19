@@ -1,7 +1,7 @@
 [
   {
     "id": 1795080480742,
-    "status": "draft",
+    "status": "published",
     "category": "Инди",
     "title": "Devolvers Digital предлагает бесплатную игру тем, кто удалит Grand Theft Auto 6",
     "excerpt": "Ироничный ответ независимого издателя на релиз главного блокбастера года: за стирание GTA 6 с жесткого диска игрокам обещают платформер Volvy's Adventure: Reslimed.",
@@ -53,7 +53,7 @@
     "image": "./gta6_cover2.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-19",
-    "views": 0,
+    "views": 5,
     "likes": 0,
     "tags": [
       "GTA 6",
