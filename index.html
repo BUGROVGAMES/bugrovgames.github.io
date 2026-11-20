@@ -37,63 +37,60 @@
     ::-webkit-scrollbar-thumb { background: #26314d; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
     /* Убираем системный скроллбар у ленты категорий */
-nav::-webkit-scrollbar,
-.categories::-webkit-scrollbar,
-[class*="filter"]::-webkit-scrollbar,
-[class*="scroll"]::-webkit-scrollbar {
-  display: none;
-}
-nav,
-.categories,
-[class*="filter"],
-[class*="scroll"] {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+    nav::-webkit-scrollbar,
+    .categories::-webkit-scrollbar,
+    [class*="filter"]::-webkit-scrollbar,
+    [class*="scroll"]::-webkit-scrollbar {
+      display: none;
+    }
+    nav,
+    .categories,
+    [class*="filter"],
+    [class*="scroll"] {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
-/* Адаптация под экраны телефонов */
-/* Адаптация под экраны телефонов */
-@media (max-width: 640px) {
-  /* Делаем главную карточку гибкой по высоте, чтобы заголовок не наезжал на плашки */
-  #featured-container article > a,
-  #featured-container article > div {
-    height: auto !important;
-    min-height: 17.5rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
+    /* Адаптация под экраны телефонов */
+    @media (max-width: 640px) {
+      #featured-container article > a,
+      #featured-container article > div {
+        height: auto !important;
+        min-height: 17.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
 
-  #featured-container article > a > div:nth-child(3),
-  #featured-container article > div > div:nth-child(3) {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    padding: 1rem 1rem 0 1rem !important;
-    flex-wrap: wrap !important;
-    z-index: 10 !important;
-  }
+      #featured-container article > a > div:nth-child(3),
+      #featured-container article > div > div:nth-child(3) {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        padding: 1rem 1rem 0 1rem !important;
+        flex-wrap: wrap !important;
+        z-index: 10 !important;
+      }
 
-  #featured-container article > a > div:nth-child(4),
-  #featured-container article > div > div:nth-child(4) {
-    position: relative !important;
-    bottom: auto !important;
-    padding: 1.25rem 1rem 1rem 1rem !important;
-    z-index: 10 !important;
-  }
+      #featured-container article > a > div:nth-child(4),
+      #featured-container article > div > div:nth-child(4) {
+        position: relative !important;
+        bottom: auto !important;
+        padding: 1.25rem 1rem 1rem 1rem !important;
+        z-index: 10 !important;
+      }
 
-  #featured-container h2 {
-    font-size: 1.15rem !important;
-    line-height: 1.3 !important;
-  }
+      #featured-container h2 {
+        font-size: 1.15rem !important;
+        line-height: 1.3 !important;
+      }
 
-  /* Выравниваем строку автор • дата • просмотры и убираем слипание */
-  #featured-container article .flex.items-center.justify-between {
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    font-size: 0.7rem !important;
-  }
-}
+      #featured-container article .flex.items-center.justify-between {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
   </style>
   <script id="seo-schema" type="application/ld+json">
   {
@@ -103,25 +100,25 @@ nav,
     "url": "https://bugrovgames.com/"
   }
   </script>
-   <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114351212', 'ym');
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114351212', 'ym');
 
-    ym(114351212, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/114351212" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-N8GQQ9ZK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-</script>
+      ym(114351212, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/114351212" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-N8GQQ9ZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
 
@@ -288,7 +285,7 @@ nav,
       </div>
 
       <div>
-        <h3 class="text-base font-bold text-emerald-300 mb-3">✅ Опубликованные статьи на сайте</h3>
+        <h3 class="text-base font-bold text-emerald-300 mb-3">✅ Опубликованные статьи на сайте (статистика видна только вам)</h3>
         <div id="published-admin-list" class="space-y-3"></div>
       </div>
     </div>
@@ -385,8 +382,6 @@ nav,
     let searchQuery = '';
     let showBookmarksOnly = false;
     let bookmarks = JSON.parse(localStorage.getItem('bg_bookmarks') || '[]');
-    let likedIds = JSON.parse(localStorage.getItem('bg_likes') || '[]');
-    let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
     let isAdminUnlocked = sessionStorage.getItem('bg_admin_unlocked') === '1';
     let secretClickCount = 0;
     let secretClickTimer = null;
@@ -405,7 +400,7 @@ nav,
       return `${SITE_URL}/${img.replace(/^\.?\//, '')}`;
     }
 
-    // Генератор полноценной статической SEO-страницы p/{id}.html
+    // Генератор полноценной статической SEO-страницы p/{id}.html (без публичных счётчиков)
     function buildArticleHtmlPage(a) {
       const pageUrl = `${SITE_URL}/p/${a.id}.html`;
       const absImage = resolveAbsoluteImage(a.image);
@@ -508,7 +503,6 @@ nav,
       <div class="p-5 sm:p-8 space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 pb-4 border-b border-slate-800">
           <span>✍️ ${escapeHtml(a.author || 'Редакция BUGROVGAMES')} • 📅 ${escapeHtml(a.date)}</span>
-          <span id="stat-views">👁️ ${a.views || 0} просмотров</span>
         </div>
 
         <p class="text-base sm:text-lg font-semibold text-cyan-200/95 leading-relaxed">${escapeHtml(a.excerpt)}</p>
@@ -521,10 +515,7 @@ nav,
           ${(a.tags || []).map(t => `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300">#${escapeHtml(t)}</span>`).join('')}
         </div>
 
-        <div class="pt-5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <button id="btn-like" onclick="togglePageLike()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-slate-800 hover:bg-slate-700 text-slate-200">
-            ❤️ Нравится (<span id="stat-likes">${a.likes || 0}</span>)
-          </button>
+        <div class="pt-5 border-t border-slate-800 flex flex-wrap items-center justify-end gap-3">
           <a href="../" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm font-bold text-white transition">Читать другие новости →</a>
         </div>
       </div>
@@ -541,66 +532,18 @@ nav,
   <script>
     const ARTICLE_ID = '${a.id}';
     const STATS_API_URL = '${STATS_API_URL}';
-    let currentViews = ${Number(a.views) || 0};
-    let currentLikes = ${Number(a.likes) || 0};
-    let likedIds = JSON.parse(localStorage.getItem('bg_likes') || '[]');
     let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
 
-    function sendStat(action) {
-      if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
+    if (STATS_API_URL && STATS_API_URL.startsWith('http') && !viewedIds.includes(ARTICLE_ID)) {
+      viewedIds.push(ARTICLE_ID);
+      sessionStorage.setItem('bg_viewed', JSON.stringify(viewedIds));
       fetch(STATS_API_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ id: ARTICLE_ID, action })
+        body: JSON.stringify({ id: ARTICLE_ID, action: 'view' })
       }).catch(() => {});
     }
-
-    function updateUi() {
-      document.getElementById('stat-views').textContent = '👁️ ' + currentViews + ' просмотров';
-      document.getElementById('stat-likes').textContent = currentLikes;
-      const btn = document.getElementById('btn-like');
-      const isLiked = likedIds.includes(Number(ARTICLE_ID)) || likedIds.includes(ARTICLE_ID);
-      btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition ' + (isLiked ? 'bg-rose-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-200');
-    }
-
-    function togglePageLike() {
-      const numId = Number(ARTICLE_ID);
-      const isLiked = likedIds.includes(numId) || likedIds.includes(ARTICLE_ID);
-      if (isLiked) {
-        likedIds = likedIds.filter(x => String(x) !== ARTICLE_ID);
-        currentLikes = Math.max(0, currentLikes - 1);
-        sendStat('unlike');
-      } else {
-        likedIds.push(numId);
-        currentLikes += 1;
-        sendStat('like');
-      }
-      localStorage.setItem('bg_likes', JSON.stringify(likedIds));
-      updateUi();
-    }
-
-    (async function initPageStats() {
-      if (STATS_API_URL && STATS_API_URL.startsWith('http')) {
-        try {
-          const res = await fetch(STATS_API_URL);
-          if (res.ok) {
-            const stats = await res.json();
-            if (stats[ARTICLE_ID]) {
-              currentViews = Math.max(currentViews, Number(stats[ARTICLE_ID].views) || 0);
-              currentLikes = Math.max(currentLikes, Number(stats[ARTICLE_ID].likes) || 0);
-            }
-          }
-        } catch (_) {}
-      }
-      if (!viewedIds.includes(ARTICLE_ID)) {
-        viewedIds.push(ARTICLE_ID);
-        sessionStorage.setItem('bg_viewed', JSON.stringify(viewedIds));
-        currentViews += 1;
-        sendStat('view');
-      }
-      updateUi();
-    })();
   <\/script>
 </body>
 </html>`;
@@ -627,6 +570,7 @@ nav,
         sessionStorage.setItem('bg_admin_unlocked', '1');
         updateAdminVisibility();
         switchMode('editor');
+        loadRemoteStats();
       } else if (pin !== null) {
         alert('Неверный PIN-код.');
       }
@@ -651,6 +595,7 @@ nav,
     }
 
     async function loadRemoteStats() {
+      if (!isAdminUnlocked) return;
       if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
       try {
         const res = await fetch(STATS_API_URL);
@@ -663,23 +608,12 @@ nav,
             a.likes = Math.max(Number(a.likes) || 0, Number(s.likes) || 0);
           }
         });
-        renderAll();
-        if (isAdminUnlocked && !document.getElementById('editor-view').classList.contains('hidden')) {
+        if (!document.getElementById('editor-view').classList.contains('hidden')) {
           renderEditor();
         }
       } catch (e) {
         console.warn('Не удалось загрузить статистику:', e);
       }
-    }
-
-    function sendStatEvent(id, action) {
-      if (!STATS_API_URL || !STATS_API_URL.startsWith('http')) return;
-      fetch(STATS_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ id: String(id), action })
-      }).catch(() => {});
     }
 
     function syncUrlParams() {
@@ -707,7 +641,6 @@ nav,
       }
 
       const params = new URLSearchParams(window.location.search);
-      // Перенаправляем старые ссылки ?article=... на постоянную страницу p/{id}.html
       const articleId = params.get('article');
       if (articleId) {
         const found = articles.find(a => String(a.id) === String(articleId) && a.status === 'published');
@@ -732,7 +665,9 @@ nav,
       updateAdminVisibility();
       renderCategories();
       renderAll();
-      await loadRemoteStats();
+      if (isAdminUnlocked) {
+        await loadRemoteStats();
+      }
     }
 
     function saveGhToken() {
@@ -883,7 +818,10 @@ nav,
       document.getElementById('btn-editor-mode').className = isEditor
         ? 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-600 text-white shadow-lg shadow-amber-600/30 flex items-center gap-2 transition'
         : 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 flex items-center gap-2 transition';
-      if (isEditor) renderEditor();
+      if (isEditor) {
+        renderEditor();
+        loadRemoteStats();
+      }
     }
 
     function toggleBookmark(id, e) {
@@ -1002,8 +940,7 @@ nav,
                 <h2 class="text-xl sm:text-2xl font-extrabold text-white group-hover:text-cyan-300 transition leading-snug">${featured.title}</h2>
                 <p class="text-xs sm:text-sm text-slate-300 mt-2 line-clamp-2">${featured.excerpt}</p>
                 <div class="flex items-center justify-between mt-3 text-xs text-slate-400">
-                  <span class="mr-2">✍️ ${featured.author} • ${featured.date}</span>
-                  <span>👁️ ${featured.views || 0} • ❤️ ${featured.likes || 0}</span>
+                  <span>✍️ ${featured.author} • ${featured.date}</span>
                 </div>
               </div>
             </a>
@@ -1037,11 +974,7 @@ nav,
             </a>
             <div class="px-4 pb-4 pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/70">
               <span>${a.date}</span>
-              <div class="flex items-center gap-3">
-                <span>👁️ ${a.views || 0}</span>
-                <span>❤️ ${a.likes || 0}</span>
-                <button onclick="toggleBookmark(${a.id}, event)" class="hover:text-purple-300">${bookmarks.includes(a.id) ? '🔖' : '📑'}</button>
-              </div>
+              <button onclick="toggleBookmark(${a.id}, event)" class="hover:text-purple-300">${bookmarks.includes(a.id) ? '🔖' : '📑'}</button>
             </div>
           </article>`).join('');
       }
@@ -1055,7 +988,7 @@ nav,
             <span class="font-gamer text-sm font-black text-purple-400/80">0${idx + 1}</span>
             <div>
               <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition line-clamp-2">${a.title}</div>
-              <div class="text-[11px] text-slate-500 mt-0.5">${a.category} • 👁️ ${a.views || 0}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${a.category}</div>
             </div>
           </a>`).join('')
         : '<div>Популярные материалы появятся после первых публикаций.</div>';
