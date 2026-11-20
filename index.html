@@ -290,7 +290,7 @@
           </div>
           <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
             <span class="text-xs font-semibold text-purple-300 lg:w-44">💬 Комментарии (comments.app):</span>
-            <input id="tg-comments-input" type="text" placeholder="Site ID с comments.app (необязательно)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+            <input id="tg-comments-input" type="text" placeholder="Site ID с comments.app (AHhS9JKa)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
             <div class="flex items-center gap-2">
               <button onclick="saveTgConfig()" class="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition">
                 Сохранить TG
@@ -397,6 +397,7 @@
     const REPO_NAME = 'bugrovgames.github.io';
     const SITE_URL = 'https://bugrovgames.com';
     const DEFAULT_TG_CHANNEL = 'bugrovgames'; // @username вашего Telegram-канала без @
+    const DEFAULT_COMMENTS_SITE_ID = 'AHhS9JKa'; // ID сайта на comments.app
     const EDITOR_PIN = '7788';
     const STATS_API_URL = 'https://script.google.com/macros/s/AKfycbxLl9QsiqFoadvm7NwVo96WlhcunAPQWryiKaHSFhHALwWuD6--kngTyaJ7me6nOMOgEw/exec';
     const CATEGORIES = ['Все', 'ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
@@ -434,13 +435,18 @@
       return DEFAULT_TG_CHANNEL;
     }
 
-    // Генератор статической SEO-страницы p/{id}.html с репостом в TG и комментариями через Telegram
+    function getCommentsSiteId() {
+      const saved = (localStorage.getItem('bg_tg_comments_id') || '').trim();
+      return saved || DEFAULT_COMMENTS_SITE_ID;
+    }
+
+    // Генератор статической SEO-страницы p/{id}.html с репостом в TG, комментариями и учётом статистики
     function buildArticleHtmlPage(a) {
       const pageUrl = `${SITE_URL}/p/${a.id}.html`;
       const shareTgUrl = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(a.title)}`;
       const channelSlug = getChannelSlug();
       const channelUrl = `https://t.me/${channelSlug}`;
-      const commentsSiteId = (localStorage.getItem('bg_tg_comments_id') || '').trim();
+      const commentsSiteId = getCommentsSiteId();
       const absImage = resolveAbsoluteImage(a.image);
       const imgSrc = a.image && !a.image.startsWith('http') ? `../${a.image.replace(/^\.?\//, '')}` : (a.image || '../favicon.jpg');
       const paragraphs = Array.isArray(a.content) ? a.content : String(a.content || '').split('\n\n');
@@ -467,7 +473,9 @@
               <h2 class="text-base sm:text-lg font-extrabold text-white">💬 Комментарии через Telegram</h2>
               <a href="${escapeHtml(channelUrl)}" target="_blank" rel="noopener" class="text-xs font-semibold text-sky-400 hover:text-sky-300">Подписаться на канал →</a>
             </div>
-            <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="${escapeHtml(commentsSiteId)}" data-limit="15" data-color="A855F7" data-dark="1"><\/script>
+            <div id="comments-widget-box">
+              <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="${escapeHtml(commentsSiteId)}" data-limit="15" data-color="A855F7" data-dark="1"><\/script>
+            </div>
           </div>`
         : `<div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
             <div>
@@ -598,6 +606,7 @@
     const ARTICLE_ID = '${a.id}';
     const STATS_API_URL = '${STATS_API_URL}';
     let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
+    let commentedIds = JSON.parse(sessionStorage.getItem('bg_commented') || '[]');
 
     if (STATS_API_URL && STATS_API_URL.startsWith('http') && !viewedIds.includes(ARTICLE_ID)) {
       viewedIds.push(ARTICLE_ID);
@@ -609,6 +618,23 @@
         body: JSON.stringify({ id: ARTICLE_ID, action: 'view' })
       }).catch(() => {});
     }
+
+    window.addEventListener('blur', function () {
+      const active = document.activeElement;
+      const box = document.getElementById('comments-widget-box');
+      if (box && active && active.tagName === 'IFRAME' && box.contains(active)) {
+        if (STATS_API_URL && STATS_API_URL.startsWith('http') && !commentedIds.includes(ARTICLE_ID)) {
+          commentedIds.push(ARTICLE_ID);
+          sessionStorage.setItem('bg_commented', JSON.stringify(commentedIds));
+          fetch(STATS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ id: ARTICLE_ID, action: 'comment' })
+          }).catch(() => {});
+        }
+      }
+    });
   <\/script>
 </body>
 </html>`;
@@ -679,6 +705,7 @@
           if (s) {
             a.views = Math.max(Number(a.views) || 0, Number(s.views) || 0);
             a.likes = Math.max(Number(a.likes) || 0, Number(s.likes) || 0);
+            a.comments = Math.max(Number(a.comments) || 0, Number(s.comments) || 0);
           }
         });
         if (!document.getElementById('editor-view').classList.contains('hidden')) {
@@ -709,7 +736,7 @@
 
       const savedTgToken = localStorage.getItem('bg_tg_token');
       const savedTgChat = localStorage.getItem('bg_tg_chat');
-      const savedCommentsId = localStorage.getItem('bg_tg_comments_id');
+      const savedCommentsId = localStorage.getItem('bg_tg_comments_id') || DEFAULT_COMMENTS_SITE_ID;
       if (savedTgToken) document.getElementById('tg-token-input').value = savedTgToken;
       if (savedTgChat) document.getElementById('tg-chat-input').value = savedTgChat;
       if (savedCommentsId) document.getElementById('tg-comments-input').value = savedCommentsId;
@@ -764,7 +791,7 @@
     function saveTgConfig() {
       const token = document.getElementById('tg-token-input').value.trim();
       let chat = document.getElementById('tg-chat-input').value.trim();
-      const commentsId = document.getElementById('tg-comments-input').value.trim();
+      const commentsId = document.getElementById('tg-comments-input').value.trim() || DEFAULT_COMMENTS_SITE_ID;
       if (chat && !chat.startsWith('@') && !/^-?\d+$/.test(chat)) {
         chat = '@' + chat.replace(/^https?:\/\/t\.me\//i, '');
         document.getElementById('tg-chat-input').value = chat;
@@ -1225,17 +1252,20 @@
         : '<div class="col-span-full text-xs text-slate-400 p-5 rounded-2xl bg-slate-900/50 border border-slate-800">Очередь черновиков пуста. Когда робот-журналист сгенерирует новости, они появятся здесь.</div>';
 
       document.getElementById('published-admin-list').innerHTML = `
-        <div class="mb-3">
+        <div class="mb-3 flex flex-wrap items-center gap-2">
           <button onclick="rebuildAllSeoPages()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white transition">
             🔄 Пересобрать отдельные SEO-страницы (p/id.html) для всех старых статей
           </button>
+          <a href="https://comments.app/" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs font-bold text-white inline-block transition">
+            💬 Модерация комментариев (comments.app) ↗
+          </a>
         </div>` + (published.length
         ? published.map(p => `
           <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3.5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <span class="text-[11px] text-cyan-400 font-semibold">[${p.category}]</span>
               <a href="./p/${p.id}.html" target="_blank" class="text-sm font-bold text-white hover:text-cyan-300 ml-1">${p.title} ↗</a>
-              <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0} • ❤️ ${p.likes || 0}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0} • ❤️ ${p.likes || 0} • 💬 ${p.comments || 0}</div>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="openEditModal(${p.id})" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white">✏️ Редактировать</button>
@@ -1316,6 +1346,7 @@
           date: today,
           views: 0,
           likes: 0,
+          comments: 0,
           tags,
           isFeatured: articles.filter(a => a.status === 'published').length === 0
         };
