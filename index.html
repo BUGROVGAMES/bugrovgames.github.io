@@ -968,9 +968,13 @@
         let tgNote = '';
         if (postToTelegram && articleToGenerate && articleToGenerate.status === 'published') {
           try {
+            // Ждём 15 секунд, чтобы файлы на GitHub Pages успели обновиться
+            await new Promise(resolve => setTimeout(resolve, 15000));
             const tgRes = await sendToTelegram(articleToGenerate, false);
             if (tgRes && tgRes.ok) {
-              tgNote = '\n✈️ Анонс также отправлен в Telegram-канал!';
+              tgNote = tgRes.mode === 'photo'
+                ? '\n✈️ Анонс с обложкой отправлен в Telegram-канал!'
+                : '\n✈️ Анонс отправлен в Telegram-канал (без фото — проверь ссылку на картинку).';
             }
           } catch (tgErr) {
             tgNote = `\n⚠️ Статья на сайте сохранена, но пост в Telegram не ушёл: ${tgErr.message}`;
@@ -1311,9 +1315,10 @@
               <a href="./p/${p.id}.html" target="_blank" class="text-sm font-bold text-white hover:text-cyan-300 ml-1">${p.title} ↗</a>
               <div class="text-[11px] text-slate-500 mt-0.5">${p.date} • 👁️ ${p.views || 0} • ❤️ ${p.likes || 0} • 💬 ${p.comments || 0}</div>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="openEditModal(${p.id})" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white">✏️ Редактировать</button>
-              <button onclick="deleteArticle(${p.id})" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-800 text-xs text-rose-300">Удалить</button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="publishArticleToTelegram(${p.id})" class="px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-bold text-white transition cursor-pointer">✈️ В ТГ</button>
+              <button onclick="openEditModal(${p.id})" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white cursor-pointer">✏️ Редактировать</button>
+              <button onclick="deleteArticle(${p.id})" class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-800 text-xs text-rose-300 cursor-pointer">Удалить</button>
             </div>
           </div>`).join('')
         : '<div class="text-xs text-slate-400">Опубликованных статей пока нет.</div>');
@@ -1411,6 +1416,29 @@
       renderEditor();
       renderAll();
       await syncToGitHub(`Publish article: ${a.title}`, a, true);
+    }
+
+    async function publishArticleToTelegram(id) {
+      const a = articles.find(x => String(x.id) === String(id));
+      if (!a) return;
+      const botToken = localStorage.getItem('bg_tg_token');
+      const chatId = localStorage.getItem('bg_tg_chat');
+      if (!botToken || !chatId) {
+        alert('Сначала заполни и сохрани Bot Token и @username канала в разделе «Автопостинг Telegram»!');
+        return;
+      }
+      try {
+        const res = await sendToTelegram(a, false);
+        if (res && res.ok) {
+          alert(res.mode === 'photo'
+            ? '✈️ Пост с обложкой успешно опубликован в Telegram!'
+            : '✈️ Пост опубликован в Telegram (без фото — проверь ссылку на картинку).');
+        } else {
+          alert('⚠️ Отправка пропущена: проверь настройки Telegram.');
+        }
+      } catch (err) {
+        alert('❌ Ошибка отправки в Telegram: ' + err.message);
+      }
     }
 
     async function deleteArticle(id) {
