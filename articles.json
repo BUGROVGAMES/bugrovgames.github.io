@@ -32,7 +32,7 @@
   },
   {
     "id": 1795168914040,
-    "status": "draft",
+    "status": "published",
     "category": "Обзоры",
     "title": "Космический кошмар в 32 битах: Обзор ретро-хоррора Derelikt",
     "excerpt": "Разбираем новый научно-фантастический шутер Derelikt, который мастерски имитирует графику эпохи первой PlayStation, но ставит экшен выше элементов страха.",
@@ -47,7 +47,7 @@
       "Rock Paper Shotgun",
       "Steam"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/1262350/header.jpg",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3810510/dac0f26c11249ec0a0ecb662a229fefb79b91e06/ss_dac0f26c11249ec0a0ecb662a229fefb79b91e06.1920x1080.jpg?t=1794855109",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
     "views": 0,
@@ -78,7 +78,7 @@
       "IGN",
       "GamesRadar"
     ],
-    "image": "./images/ubisoft_1",
+    "image": "./images/ubisoft1",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
     "views": 0,
