@@ -111,7 +111,9 @@
               <h2 class="text-base sm:text-lg font-extrabold text-white">💬 Комментарии через Telegram</h2>
               <a href="https://t.me/bugrovgames" target="_blank" rel="noopener" class="text-xs font-semibold text-sky-400 hover:text-sky-300">Подписаться на канал →</a>
             </div>
-            <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="AHhS9JKa" data-limit="15" data-color="A855F7" data-dark="1"></script>
+            <div id="comments-widget-box">
+              <script async src="https://comments.app/js/widget.js?3" data-comments-app-website="AHhS9JKa" data-limit="15" data-color="A855F7" data-dark="1"></script>
+            </div>
           </div>
   </main>
 
@@ -129,6 +131,7 @@
     const ARTICLE_ID = '1795061154020';
     const STATS_API_URL = 'https://script.google.com/macros/s/AKfycbxLl9QsiqFoadvm7NwVo96WlhcunAPQWryiKaHSFhHALwWuD6--kngTyaJ7me6nOMOgEw/exec';
     let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
+    let commentedIds = JSON.parse(sessionStorage.getItem('bg_commented') || '[]');
 
     if (STATS_API_URL && STATS_API_URL.startsWith('http') && !viewedIds.includes(ARTICLE_ID)) {
       viewedIds.push(ARTICLE_ID);
@@ -140,6 +143,23 @@
         body: JSON.stringify({ id: ARTICLE_ID, action: 'view' })
       }).catch(() => {});
     }
+
+    window.addEventListener('blur', function () {
+      const active = document.activeElement;
+      const box = document.getElementById('comments-widget-box');
+      if (box && active && active.tagName === 'IFRAME' && box.contains(active)) {
+        if (STATS_API_URL && STATS_API_URL.startsWith('http') && !commentedIds.includes(ARTICLE_ID)) {
+          commentedIds.push(ARTICLE_ID);
+          sessionStorage.setItem('bg_commented', JSON.stringify(commentedIds));
+          fetch(STATS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ id: ARTICLE_ID, action: 'comment' })
+          }).catch(() => {});
+        }
+      }
+    });
   </script>
 </body>
 </html>
