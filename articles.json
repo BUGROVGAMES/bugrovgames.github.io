@@ -1,7 +1,7 @@
 [
   {
     "id": 1795190486251,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Глава Take-Two охладил пыл фанатов: GTA 7 ждать пока не стоит",
     "excerpt": "Генеральный директор Take-Two Interactive Штраус Зельник прокомментировал перспективы развития серии Grand Theft Auto после успешного старта шестой части.",
@@ -16,7 +16,7 @@
       "GameSpot",
       "Polygon"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/3240220/header.jpg",
+    "image": "./images/gta6_cover.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
     "views": 0,
@@ -50,7 +50,7 @@
     "image": "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
-    "views": 4,
+    "views": 6,
     "likes": 0,
     "tags": [
       "Saihate Station: Twilight Edition",
@@ -59,7 +59,8 @@
       "PLAYISM",
       "Релизы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795168914040,
@@ -81,7 +82,7 @@
     "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3810510/dac0f26c11249ec0a0ecb662a229fefb79b91e06/ss_dac0f26c11249ec0a0ecb662a229fefb79b91e06.1920x1080.jpg?t=1794855109",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
-    "views": 3,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Derelikt",
@@ -90,7 +91,8 @@
       "Обзоры",
       "Ретро-шутер"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795158320728,
@@ -112,7 +114,7 @@
     "image": "./images/Ubisoft_1.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
-    "views": 4,
+    "views": 5,
     "likes": 0,
     "tags": [
       "Ubisoft",
@@ -120,7 +122,8 @@
       "Индустрия",
       "Assassin's Creed"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795147278368,
@@ -150,7 +153,8 @@
       "BLAST Slam",
       "Турниры"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795136504998,
@@ -180,7 +184,8 @@
       "Steam Machine",
       "Железо"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795125810364,
@@ -210,7 +215,8 @@
       "Стелс",
       "Steam"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795115164310,
@@ -240,7 +246,8 @@
       "MMORPG",
       "Обзоры"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795104350633,
@@ -270,7 +277,8 @@
       "Индустрия",
       "Assassin's Creed"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795093581828,
@@ -292,7 +300,7 @@
     "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-19",
-    "views": 5,
+    "views": 6,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -301,7 +309,8 @@
       "HLTV",
       "Трансферы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795084834410,
@@ -323,7 +332,7 @@
     "image": "./gta6_cover3.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-19",
-    "views": 6,
+    "views": 8,
     "likes": 0,
     "tags": [
       "GTA V",
@@ -331,7 +340,8 @@
       "Take-Two Interactive",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795080480742,
@@ -362,7 +372,8 @@
       "Релизы",
       "Юмор"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795061154020,
@@ -395,7 +406,8 @@
       "Обзоры",
       "Take-Two Interactive"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795051255681,
@@ -426,7 +438,8 @@
       "Облачный гейминг",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795039293398,
@@ -456,7 +469,8 @@
       "Трансферы",
       "LCK"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795028494189,
@@ -488,7 +502,8 @@
       "PlayStation 5 Pro",
       "Xbox Series S"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795017728240,
@@ -552,7 +567,8 @@
       "Open World",
       "PS5"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794963660152,
@@ -582,7 +598,8 @@
       "Суд",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794953102199,
@@ -615,7 +632,8 @@
       "Civilization",
       "Увольнения"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794942332653,
@@ -645,7 +663,8 @@
       "The Game Awards",
       "Люсия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794931294500,
@@ -673,7 +692,8 @@
       "Кристоф Хартманн",
       "Разработка игр"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794925614894,
@@ -703,7 +723,8 @@
       "Рекорды продаж",
       "Ремейк"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1794882378745,
@@ -761,6 +782,7 @@
       "Индустрия",
       "Здоровье"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   }
 ]
