@@ -63,7 +63,7 @@
   },
   {
     "id": 1795158320728,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Ubisoft открыла дочернюю студию Motherbrain для внедрения генеративного ИИ в геймплей своих будущих игр",
     "excerpt": "Французский издатель Ubisoft учредил специализированное подразделение Motherbrain, которое займётся интеграцией технологий генеративного искусственного интеллекта в игровой процесс флагманских франшиз.",
@@ -78,7 +78,7 @@
       "IGN",
       "GamesRadar"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/3035570/header.jpg",
+    "image": "./images/ubisoft1",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
     "views": 0,
