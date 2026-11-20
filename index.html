@@ -261,7 +261,7 @@
               🛡️ Кабинет Главного редактора — BUGROVGAMES
             </h2>
             <p class="text-xs sm:text-sm text-slate-300 mt-1">
-              Здесь собираются черновики от ИИ-журналиста. Отредактируй текст и нажми «Опубликовать» — сайт сам обновит базу новостей и карту сайта <code class="text-cyan-300">sitemap.xml</code>.
+              Здесь собираются черновики от ИИ-журналиста. Отредактируй текст и нажми «Опубликовать» — сайт сам обновит базу новостей, карту сайта <code class="text-cyan-300">sitemap.xml</code> и отправит пост в Telegram.
             </p>
           </div>
           <button onclick="openNewArticleModal()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs sm:text-sm font-bold transition">
@@ -269,13 +269,30 @@
           </button>
         </div>
 
+        <!-- Подключение GitHub -->
         <div class="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-          <span class="text-xs font-semibold text-slate-300">🔑 Ключ публикации GitHub:</span>
-          <input id="gh-token-input" type="password" placeholder="Вставь GitHub Personal Access Token (ghp_...)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          <span class="text-xs font-semibold text-slate-300 sm:w-44">🔑 Ключ GitHub:</span>
+          <input id="gh-token-input" type="password" placeholder="GitHub Personal Access Token (ghp_...)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
           <button onclick="saveGhToken()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
-            Сохранить ключ в браузере
+            Сохранить ключ
           </button>
           <span id="gh-status" class="text-xs text-slate-400"></span>
+        </div>
+
+        <!-- Подключение Telegram автопостинга -->
+        <div class="mt-3 pt-3 border-t border-white/10 flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
+          <span class="text-xs font-semibold text-cyan-300 lg:w-44">✈️ Автопостинг Telegram:</span>
+          <input id="tg-token-input" type="password" placeholder="Bot Token от @BotFather (123456:AAF...)" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          <input id="tg-chat-input" type="text" placeholder="@username канала (напр. @bugrovgames)" class="sm:w-56 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          <div class="flex items-center gap-2">
+            <button onclick="saveTgConfig()" class="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition">
+              Сохранить TG
+            </button>
+            <button onclick="testTelegramPost()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition">
+              📨 Тест
+            </button>
+          </div>
+          <span id="tg-status" class="text-xs text-slate-400"></span>
         </div>
       </div>
 
@@ -633,6 +650,15 @@
         document.getElementById('gh-token-input').value = savedToken;
         document.getElementById('gh-status').textContent = '✅ Ключ подключён';
       }
+
+      const savedTgToken = localStorage.getItem('bg_tg_token');
+      const savedTgChat = localStorage.getItem('bg_tg_chat');
+      if (savedTgToken) document.getElementById('tg-token-input').value = savedTgToken;
+      if (savedTgChat) document.getElementById('tg-chat-input').value = savedTgChat;
+      if (savedTgToken && savedTgChat) {
+        document.getElementById('tg-status').textContent = '✅ TG подключён';
+      }
+
       try {
         const res = await fetch('./articles.json?v=' + Date.now());
         if (res.ok) articles = await res.json();
@@ -676,7 +702,116 @@
       document.getElementById('gh-status').textContent = val ? '✅ Ключ сохранён' : '⚠️ Ключ очищен';
     }
 
-    async function syncToGitHub(commitMsg, articleToGenerate = null) {
+    function saveTgConfig() {
+      const token = document.getElementById('tg-token-input').value.trim();
+      let chat = document.getElementById('tg-chat-input').value.trim();
+      if (chat && !chat.startsWith('@') && !/^-?\d+$/.test(chat)) {
+        chat = '@' + chat.replace(/^https?:\/\/t\.me\//i, '');
+        document.getElementById('tg-chat-input').value = chat;
+      }
+      localStorage.setItem('bg_tg_token', token);
+      localStorage.setItem('bg_tg_chat', chat);
+      document.getElementById('tg-status').textContent = (token && chat) ? '✅ TG подключён' : '⚠️ Заполните оба поля';
+    }
+
+    function formatTgHashtags(a) {
+      const rawTags = [a.category, ...(a.tags || [])].filter(Boolean);
+      const cleaned = rawTags
+        .map(t => '#' + String(t).trim().replace(/[^a-zA-Zа-яА-ЯёЁ0-9_]+/g, '_').replace(/^_+|_+$/g, ''))
+        .filter(t => t.length > 1);
+      return [...new Set(cleaned)].slice(0, 5).join(' ');
+    }
+
+    async function sendToTelegram(a, isTest = false) {
+      const botToken = localStorage.getItem('bg_tg_token');
+      const chatId = localStorage.getItem('bg_tg_chat');
+      if (!botToken || !chatId) return { skipped: true };
+
+      const pageUrl = isTest ? `${SITE_URL}/` : `${SITE_URL}/p/${a.id}.html`;
+      const absImage = resolveAbsoluteImage(a.image);
+      const hashtags = formatTgHashtags(a);
+      const scoreLine = a.score ? `\n⭐ <b>Оценка BUGROVGAMES: ${escapeHtml(a.score)} / 10</b>` : '';
+
+      const caption = [
+        `🎮 <b>${escapeHtml(a.title)}</b>`,
+        '',
+        escapeHtml(a.excerpt || ''),
+        scoreLine,
+        hashtags ? `\n${escapeHtml(hashtags)}` : '',
+        `\n👉 <a href="${pageUrl}">Читать полностью на BUGROVGAMES</a>`
+      ].filter(line => line !== null && line !== undefined).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+      const replyMarkup = {
+        inline_keyboard: [[
+          { text: '📖 Читать полностью на сайте', url: pageUrl }
+        ]]
+      };
+
+      // Пробуем отправить пост с обложкой (если подпись укладывается в лимит Telegram 1024 символа)
+      if (absImage && caption.length <= 1020) {
+        try {
+          const photoRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              photo: absImage,
+              caption: caption,
+              parse_mode: 'HTML',
+              reply_markup: replyMarkup
+            })
+          });
+          const photoData = await photoRes.json();
+          if (photoData.ok) return { ok: true, mode: 'photo' };
+          console.warn('Telegram sendPhoto fallback:', photoData.description);
+        } catch (err) {
+          console.warn('Telegram sendPhoto network fallback:', err);
+        }
+      }
+
+      // Резервная отправка текстовым постом с превью ссылки
+      const msgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: caption,
+          parse_mode: 'HTML',
+          link_preview_options: { url: pageUrl, prefer_large_media: true },
+          reply_markup: replyMarkup
+        })
+      });
+      const msgData = await msgRes.json();
+      if (!msgData.ok) {
+        throw new Error(msgData.description || 'Ошибка Telegram API');
+      }
+      return { ok: true, mode: 'message' };
+    }
+
+    async function testTelegramPost() {
+      saveTgConfig();
+      const botToken = localStorage.getItem('bg_tg_token');
+      const chatId = localStorage.getItem('bg_tg_chat');
+      if (!botToken || !chatId) {
+        alert('Сначала введи Bot Token от @BotFather и @username канала!');
+        return;
+      }
+      try {
+        await sendToTelegram({
+          id: 'test',
+          category: 'Индустрия',
+          title: 'Тестовый пост автопостинга BUGROVGAMES',
+          excerpt: 'Связь между Кабинетом Главреда и Telegram-каналом успешно настроена!',
+          image: `${SITE_URL}/favicon.jpg`,
+          tags: ['BUGROVGAMES', 'Игры']
+        }, true);
+        alert('✅ Тестовый пост успешно отправлен в Telegram!');
+      } catch (err) {
+        alert('❌ Ошибка отправки в Telegram: ' + err.message + '\n\nПроверь токен бота и убедись, что бот добавлен в администраторы канала с правом публикации сообщений.');
+      }
+    }
+
+    async function syncToGitHub(commitMsg, articleToGenerate = null, postToTelegram = false) {
       const token = localStorage.getItem('bg_gh_token');
       if (!token) {
         alert('Чтобы сохранить изменения на сайт для всех читателей, вставь свой GitHub Token в Кабинете Главреда!');
@@ -699,7 +834,20 @@
         const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
         const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
         await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: update sitemap.xml', token);
-        alert('✅ Сохранено на GitHub! Отдельная страница статьи и sitemap.xml обновятся через ~30 секунд.');
+
+        let tgNote = '';
+        if (postToTelegram && articleToGenerate && articleToGenerate.status === 'published') {
+          try {
+            const tgRes = await sendToTelegram(articleToGenerate, false);
+            if (tgRes && tgRes.ok) {
+              tgNote = '\n✈️ Анонс также отправлен в Telegram-канал!';
+            }
+          } catch (tgErr) {
+            tgNote = `\n⚠️ Статья на сайте сохранена, но пост в Telegram не ушёл: ${tgErr.message}`;
+          }
+        }
+
+        alert('✅ Сохранено на GitHub! Страница статьи и sitemap.xml обновятся через ~30 секунд.' + tgNote);
       } catch (err) {
         alert('Ошибка сохранения на GitHub: ' + err.message);
       }
@@ -1082,15 +1230,19 @@
       const today = new Date().toISOString().split('T')[0];
 
       let targetArticle = null;
+      let shouldPostToTelegram = false;
+
       if (idVal) {
         const idx = articles.findIndex(x => String(x.id) === String(idVal));
         if (idx !== -1) {
+          const wasDraft = articles[idx].status !== 'published';
           articles[idx] = {
             ...articles[idx],
             title, category, score: score || undefined, image, excerpt, content, tags,
             status: publishNow ? 'published' : articles[idx].status
           };
           targetArticle = articles[idx];
+          shouldPostToTelegram = publishNow && wasDraft;
         }
       } else {
         targetArticle = {
@@ -1110,11 +1262,12 @@
           isFeatured: articles.filter(a => a.status === 'published').length === 0
         };
         articles.unshift(targetArticle);
+        shouldPostToTelegram = publishNow;
       }
       closeEditModal();
       renderEditor();
       renderAll();
-      await syncToGitHub(publishNow ? `Publish: ${title}` : `Save draft: ${title}`, targetArticle);
+      await syncToGitHub(publishNow ? `Publish: ${title}` : `Save draft: ${title}`, targetArticle, shouldPostToTelegram);
     }
 
     async function publishDraft(id) {
@@ -1124,7 +1277,7 @@
       a.date = new Date().toISOString().split('T')[0];
       renderEditor();
       renderAll();
-      await syncToGitHub(`Publish article: ${a.title}`, a);
+      await syncToGitHub(`Publish article: ${a.title}`, a, true);
     }
 
     async function deleteArticle(id) {
