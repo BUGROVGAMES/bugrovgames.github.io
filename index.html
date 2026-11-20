@@ -440,7 +440,7 @@
       return saved || DEFAULT_COMMENTS_SITE_ID;
     }
 
-    // Генератор статической SEO-страницы p/{id}.html с репостом в TG, комментариями и учётом статистики
+    // Генератор статической SEO-страницы p/{id}.html с лайком, репостом в TG, комментариями и учётом статистики
     function buildArticleHtmlPage(a) {
       const pageUrl = `${SITE_URL}/p/${a.id}.html`;
       const shareTgUrl = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(a.title)}`;
@@ -581,9 +581,14 @@
         </div>
 
         <div class="pt-5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <a href="${escapeHtml(shareTgUrl)}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
-            ✈️ Поделиться в Telegram
-          </a>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button id="like-btn" type="button" onclick="toggleLike()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/60 border border-slate-700 hover:border-rose-500/50 text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2 transition cursor-pointer">
+              ❤️ <span>Нравится</span>
+            </button>
+            <a href="${escapeHtml(shareTgUrl)}" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
+              ✈️ Поделиться в Telegram
+            </a>
+          </div>
           <a href="../" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm font-bold text-white transition">Читать другие новости →</a>
         </div>
       </div>
@@ -607,6 +612,45 @@
     const STATS_API_URL = '${STATS_API_URL}';
     let viewedIds = JSON.parse(sessionStorage.getItem('bg_viewed') || '[]');
     let commentedIds = JSON.parse(sessionStorage.getItem('bg_commented') || '[]');
+    let likedIds = JSON.parse(localStorage.getItem('bg_liked') || '[]');
+
+    function updateLikeButtonUI() {
+      const btn = document.getElementById('like-btn');
+      if (!btn) return;
+      const isLiked = likedIds.includes(ARTICLE_ID);
+      if (isLiked) {
+        btn.className = 'px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-xs sm:text-sm font-bold text-white flex items-center gap-2 shadow-lg shadow-rose-600/30 transition cursor-pointer';
+        btn.innerHTML = '❤️ <span>Понравилось</span>';
+      } else {
+        btn.className = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/60 border border-slate-700 hover:border-rose-500/50 text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2 transition cursor-pointer';
+        btn.innerHTML = '🤍 <span>Нравится</span>';
+      }
+    }
+
+    function toggleLike() {
+      const isLiked = likedIds.includes(ARTICLE_ID);
+      let action = 'like';
+      if (isLiked) {
+        likedIds = likedIds.filter(id => String(id) !== String(ARTICLE_ID));
+        action = 'unlike';
+      } else {
+        likedIds.push(ARTICLE_ID);
+        action = 'like';
+      }
+      localStorage.setItem('bg_liked', JSON.stringify(likedIds));
+      updateLikeButtonUI();
+
+      if (STATS_API_URL && STATS_API_URL.startsWith('http')) {
+        fetch(STATS_API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ id: ARTICLE_ID, action: action })
+        }).catch(() => {});
+      }
+    }
+
+    updateLikeButtonUI();
 
     if (STATS_API_URL && STATS_API_URL.startsWith('http') && !viewedIds.includes(ARTICLE_ID)) {
       viewedIds.push(ARTICLE_ID);
