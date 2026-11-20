@@ -855,13 +855,47 @@
       return [...new Set(cleaned)].slice(0, 5).join(' ');
     }
 
+    function buildImageCandidates(img) {
+      const list = [];
+      const add = (u) => {
+        if (u && !list.includes(u)) list.push(u);
+      };
+      if (img) {
+        if (img.startsWith('http')) {
+          add(img);
+        } else {
+          const clean = img.replace(/^\.?\//, '');
+          add(`${SITE_URL}/${clean}`);
+          if (!clean.includes('/')) {
+            add(`${SITE_URL}/images/${clean}`);
+            add(`${SITE_URL}/img/${clean}`);
+            add(`${SITE_URL}/covers/${clean}`);
+          }
+        }
+      }
+      add(`${SITE_URL}/favicon.jpg`);
+      return list;
+    }
+
+    async function fetchImageBlob(url) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) return null;
+        const blob = await res.blob();
+        if (!blob || blob.size < 200) return null;
+        return blob;
+      } catch (e) {
+        return null;
+      }
+    }
+
     async function sendToTelegram(a, isTest = false) {
       const botToken = localStorage.getItem('bg_tg_token');
       const chatId = localStorage.getItem('bg_tg_chat');
       if (!botToken || !chatId) return { skipped: true };
 
       const pageUrl = isTest ? `${SITE_URL}/` : `${SITE_URL}/p/${a.id}.html`;
-      const absImage = resolveAbsoluteImage(a.image);
+      const candidates = buildImageCandidates(a.image);
       const hashtags = formatTgHashtags(a);
       const scoreLine = a.score ? `\n⭐ <b>Оценка BUGROVGAMES: ${escapeHtml(a.score)} / 10</b>` : '';
 
@@ -880,23 +914,53 @@
         ]]
       };
 
-      if (absImage && caption.length <= 1020) {
-        try {
-          const photoRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: chatId,
-              photo: absImage,
-              caption: caption,
-              parse_mode: 'HTML',
-              reply_markup: replyMarkup
-            })
-          });
-          const photoData = await photoRes.json();
-          if (photoData.ok) return { ok: true, mode: 'photo' };
-        } catch (err) {
-          console.warn('Telegram sendPhoto network fallback:', err);
+      let lastPhotoErr = '';
+
+      // 1) Пробуем скачать картинку напрямую (из корня bugrovgames.com/... или по внешней ссылке) и залить в Telegram через multipart/form-data
+      if (caption.length <= 1020) {
+        for (const imgUrl of candidates) {
+          const blob = await fetchImageBlob(imgUrl);
+          if (blob) {
+            try {
+              const ext = (blob.type && blob.type.includes('png')) ? 'png' : ((blob.type && blob.type.includes('webp')) ? 'webp' : 'jpg');
+              const formData = new FormData();
+              formData.append('chat_id', chatId);
+              formData.append('photo', blob, `cover.${ext}`);
+              formData.append('caption', caption);
+              formData.append('parse_mode', 'HTML');
+              formData.append('reply_markup', JSON.stringify(replyMarkup));
+
+              const upRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+              });
+              const upData = await upRes.json();
+              if (upData.ok) return { ok: true, mode: 'photo_upload', usedUrl: imgUrl };
+              lastPhotoErr = upData.description || 'upload failed';
+            } catch (err) {
+              lastPhotoErr = err.message || 'upload network error';
+            }
+          }
+
+          // 2) Запасной вариант: передаём Telegram прямой URL картинки
+          try {
+            const photoRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                photo: imgUrl,
+                caption: caption,
+                parse_mode: 'HTML',
+                reply_markup: replyMarkup
+              })
+            });
+            const photoData = await photoRes.json();
+            if (photoData.ok) return { ok: true, mode: 'photo_url', usedUrl: imgUrl };
+            lastPhotoErr = photoData.description || 'url failed';
+          } catch (err) {
+            lastPhotoErr = err.message || 'url network error';
+          }
         }
       }
 
@@ -915,7 +979,7 @@
       if (!msgData.ok) {
         throw new Error(msgData.description || 'Ошибка Telegram API');
       }
-      return { ok: true, mode: 'message' };
+      return { ok: true, mode: 'message', photoError: lastPhotoErr };
     }
 
     async function testTelegramPost() {
@@ -1430,9 +1494,9 @@
       try {
         const res = await sendToTelegram(a, false);
         if (res && res.ok) {
-          alert(res.mode === 'photo'
-            ? '✈️ Пост с обложкой успешно опубликован в Telegram!'
-            : '✈️ Пост опубликован в Telegram (без фото — проверь ссылку на картинку).');
+          alert(res.mode && res.mode.startsWith('photo')
+            ? `✈️ Пост с обложкой успешно опубликован в Telegram! (${res.usedUrl || ''})`
+            : `✈️ Пост опубликован в Telegram без фото (${res.photoError || 'проверь доступность файла картинки'}).`);
         } else {
           alert('⚠️ Отправка пропущена: проверь настройки Telegram.');
         }
