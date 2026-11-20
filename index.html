@@ -908,12 +908,6 @@
         `\n👉 <a href="${pageUrl}">Читать полностью на BUGROVGAMES</a>`
       ].filter(line => line !== null && line !== undefined).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 
-      const replyMarkup = {
-        inline_keyboard: [[
-          { text: '📖 Читать полностью на сайте', url: pageUrl }
-        ]]
-      };
-
       let lastPhotoErr = '';
 
       // 1) Пробуем скачать картинку напрямую (из корня bugrovgames.com/... или по внешней ссылке) и залить в Telegram через multipart/form-data
@@ -928,7 +922,6 @@
               formData.append('photo', blob, `cover.${ext}`);
               formData.append('caption', caption);
               formData.append('parse_mode', 'HTML');
-              formData.append('reply_markup', JSON.stringify(replyMarkup));
 
               const upRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
                 method: 'POST',
@@ -951,8 +944,7 @@
                 chat_id: chatId,
                 photo: imgUrl,
                 caption: caption,
-                parse_mode: 'HTML',
-                reply_markup: replyMarkup
+                parse_mode: 'HTML'
               })
             });
             const photoData = await photoRes.json();
@@ -971,8 +963,7 @@
           chat_id: chatId,
           text: caption,
           parse_mode: 'HTML',
-          link_preview_options: { url: pageUrl, prefer_large_media: true },
-          reply_markup: replyMarkup
+          link_preview_options: { url: pageUrl, prefer_large_media: true }
         })
       });
       const msgData = await msgRes.json();
