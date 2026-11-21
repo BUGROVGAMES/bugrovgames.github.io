@@ -1,7 +1,7 @@
 [
   {
     "id": 1795276946104,
-    "status": "draft",
+    "status": "published",
     "category": "Обзоры",
     "title": "Обзор Grand Theft Auto VI: Почему при 99 баллах на Metacritic игроки в ярости?",
     "excerpt": "Разбираемся в феноменальном расколе Grand Theft Auto VI: исторические рекорды продаж и восторги критиков столкнулись с ревью-бомбингом и техническим кризисом на консолях.",
@@ -21,7 +21,7 @@
       "Polygon",
       "Insider Gaming"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/3240220/header.jpg",
+    "image": "./images/gta6_cover2.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
@@ -57,7 +57,7 @@
     "image": "./images/akira.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 5,
     "likes": 0,
     "tags": [
       "Arika",
@@ -66,7 +66,8 @@
       "Tetris 99",
       "Утраты"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795255646430,
@@ -89,7 +90,7 @@
     "image": "./images/valorant_cover.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -98,7 +99,8 @@
       "VCT",
       "Турниры"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795244458549,
@@ -120,7 +122,7 @@
     "image": "./images/nvidia.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "NVIDIA",
@@ -129,7 +131,8 @@
       "ПК",
       "Драйверы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795233959163,
@@ -151,7 +154,7 @@
     "image": "./images/ugly-within.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 3,
     "likes": 0,
     "tags": [
       "Ugly Within",
@@ -161,7 +164,8 @@
       "Хороры",
       "Релизы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795222860229,
@@ -183,7 +187,7 @@
     "image": "./images/brokenlore_cover.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 1,
+    "views": 4,
     "likes": 0,
     "tags": [
       "BrokenLore: DON'T PLAY",
@@ -214,7 +218,7 @@
     "image": "https://cdn.akamai.steamstatic.com/steam/apps/1687950/header.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
-    "views": 0,
+    "views": 2,
     "likes": 0,
     "tags": [
       "Atlus",
@@ -223,7 +227,8 @@
       "Индустрия",
       "Sega"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795201262327,
@@ -245,7 +250,7 @@
     "image": "https://cdn.akamai.steamstatic.com/steam/apps/1276800/library_hero.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-20",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -254,7 +259,8 @@
       "Трансферы",
       "LEC"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795190486251,
