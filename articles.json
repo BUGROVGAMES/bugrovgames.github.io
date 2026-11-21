@@ -64,7 +64,7 @@
   },
   {
     "id": 1795244458549,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Свежий драйвер NVIDIA GeForce 621.24 вызывает избыточную запись данных на SSD",
     "excerpt": "Сообщество владельцев ПК столкнулось с неприятной технической проблемой: новейшее программное обеспечение от NVIDIA нагружает накопители лишними операциями записи.",
@@ -79,7 +79,7 @@
       "www.rockpapershotgun.com",
       "www.eurogamer.net"
     ],
-    "image": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/nvidia.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
