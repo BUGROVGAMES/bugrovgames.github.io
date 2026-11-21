@@ -1060,36 +1060,58 @@
     }
 
     async function rebuildAllSeoPages() {
-      const published = articles.filter(a => a.status === 'published');
-      if (!published.length) {
-        alert('Опубликованных статей пока нет.');
-        return;
-      }
-      if (!confirm(`Пересобрать отдельные SEO-страницы (p/id.html) для всех ${published.length} опубликованных статей и обновить sitemap.xml?`)) return;
+  const published = articles.filter(a => a.status === 'published');
+  if (!published.length) {
+    alert('Опубликованных статей пока нет.');
+    return;
+  }
+  if (!confirm(`Пересобрать отдельные SEO-страницы (p/id.html) для всех ${published.length} опубликованных статей и обновить sitemap.xml?`)) return;
 
-      try {
-        const filesToSync = published.map(a => ({
-          path: `p/${a.id}.html`,
-          content: buildArticleHtmlPage(a),
-          message: `SEO page: p/${a.id}.html`
-        }));
-        filesToSync.push({
-          path: 'sitemap.xml',
-          content: buildSitemapXml(),
-          message: 'SEO: rebuild all article pages & sitemap.xml'
-        });
+  const BATCH_SIZE = 10; // Безопасно для лимита 50 subrequests на один вызов Worker
+  const pageFiles = published.map(a => ({
+    path: `p/${a.id}.html`,
+    content: buildArticleHtmlPage(a),
+    message: `SEO page: p/${a.id}.html`
+  }));
 
-        await callWorker({
-          action: 'github_sync',
-          repoOwner: REPO_OWNER,
-          repoName: REPO_NAME,
-          files: filesToSync
-        });
-        alert(`🎉 Готово! Обновлено ${published.length} страниц в папке p/ и sitemap.xml.`);
-      } catch (err) {
-        alert('Ошибка при генерации страниц: ' + err.message);
+  try {
+    const totalBatches = Math.ceil(pageFiles.length / BATCH_SIZE);
+
+    for (let i = 0; i < pageFiles.length; i += BATCH_SIZE) {
+      const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+      const chunk = pageFiles.slice(i, i + BATCH_SIZE);
+
+      await callWorker({
+        action: 'github_sync',
+        repoOwner: REPO_OWNER,
+        repoName: REPO_NAME,
+        files: chunk
+      });
+
+      console.log(`Батч ${batchNum}/${totalBatches} сохранён (${chunk.length} стр.)`);
+
+      if (i + BATCH_SIZE < pageFiles.length) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
       }
     }
+
+    // Отдельным запросом обновляем sitemap.xml
+    await callWorker({
+      action: 'github_sync',
+      repoOwner: REPO_OWNER,
+      repoName: REPO_NAME,
+      files: [{
+        path: 'sitemap.xml',
+        content: buildSitemapXml(),
+        message: 'SEO: update sitemap.xml'
+      }]
+    });
+
+    alert(`🎉 Готово! Обновлено ${published.length} страниц в папке p/ и sitemap.xml.`);
+  } catch (err) {
+    alert('Ошибка при генерации страниц: ' + err.message);
+  }
+}
 
     function renderCategories() {
       const nav = document.getElementById('category-tabs');
