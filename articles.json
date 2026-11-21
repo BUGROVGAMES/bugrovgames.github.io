@@ -32,7 +32,7 @@
   },
   {
     "id": 1795255646430,
-    "status": "draft",
+    "status": "published",
     "category": "Киберспорт",
     "title": "Valorant Champions Tour: Riot Games анонсировала новые правила квалификаций и расширение пула карт",
     "excerpt": "Разработчики Valorant представили глобальный регламент киберспортивного сезона, который затронет все региональные лиги и систему отбора на международные турниры.",
@@ -48,7 +48,7 @@
       "dotesports.com",
       "dexerto.com"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/1276800/header.jpg",
+    "image": "./images/valorant_cover.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
