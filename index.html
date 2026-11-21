@@ -396,7 +396,7 @@
     const REPO_OWNER = 'bugrovgames';
     const REPO_NAME = 'bugrovgames.github.io';
     const SITE_URL = 'https://bugrovgames.com';
-    const WORKER_URL = ''; // Укажем на Шаге 2, например: https://bugrovgames-api.ваш-аккаунт.workers.dev
+    const WORKER_URL = 'https://bugrovgames-api.bugrovgames.workers.dev';
     const DEFAULT_TG_CHANNEL = 'bugrovgames'; // @username вашего Telegram-канала без @
     const DEFAULT_COMMENTS_SITE_ID = 'AHhS9JKa'; // ID сайта на comments.app
     const STATS_API_URL = 'https://script.google.com/macros/s/AKfycbxLl9QsiqFoadvm7NwVo96WlhcunAPQWryiKaHSFhHALwWuD6--kngTyaJ7me6nOMOgEw/exec';
@@ -806,21 +806,15 @@
     }
 
     async function init() {
-      const savedToken = localStorage.getItem('bg_gh_token');
-      if (savedToken) {
-        document.getElementById('gh-token-input').value = savedToken;
-        document.getElementById('gh-status').textContent = '✅ Ключ подключён';
-      }
+      localStorage.removeItem('bg_gh_token');
+      localStorage.removeItem('bg_tg_token');
 
-      const savedTgToken = localStorage.getItem('bg_tg_token');
-      const savedTgChat = localStorage.getItem('bg_tg_chat');
+      const savedTgChat = localStorage.getItem('bg_tg_chat') || ('@' + DEFAULT_TG_CHANNEL);
       const savedCommentsId = localStorage.getItem('bg_tg_comments_id') || DEFAULT_COMMENTS_SITE_ID;
-      if (savedTgToken) document.getElementById('tg-token-input').value = savedTgToken;
-      if (savedTgChat) document.getElementById('tg-chat-input').value = savedTgChat;
-      if (savedCommentsId) document.getElementById('tg-comments-input').value = savedCommentsId;
-      if (savedTgToken && savedTgChat) {
-        document.getElementById('tg-status').textContent = '✅ TG подключён';
-      }
+      document.getElementById('tg-chat-input').value = savedTgChat;
+      document.getElementById('tg-comments-input').value = savedCommentsId;
+      document.getElementById('gh-status').textContent = WORKER_URL ? '🛡️ Ключи хранятся в Cloudflare Worker' : '⚠️ Не указан WORKER_URL';
+      document.getElementById('tg-status').textContent = WORKER_URL ? '🛡️ TG отправляется через Worker' : '⚠️ Не указан WORKER_URL';
       updateChannelLinks();
 
       try {
@@ -860,25 +854,51 @@
       }
     }
 
+    async function callWorker(payload) {
+      if (!WORKER_URL) {
+        throw new Error('Не задан WORKER_URL в коде сайта.');
+      }
+      const password = getEditorPassword();
+      if (!password) {
+        await promptAdminLogin();
+        const retryPass = getEditorPassword();
+        if (!retryPass) throw new Error('Требуется пароль редактора.');
+      }
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...payload, password: getEditorPassword() })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        logoutAdmin();
+        throw new Error('Сессия истекла или пароль неверный. Войдите снова.');
+      }
+      if (!res.ok || data.ok === false) {
+        throw new Error(data.error || `Ошибка Worker (${res.status})`);
+      }
+      return data;
+    }
+
     function saveGhToken() {
-      const val = document.getElementById('gh-token-input').value.trim();
-      localStorage.setItem('bg_gh_token', val);
-      document.getElementById('gh-status').textContent = val ? '✅ Ключ сохранён' : '⚠️ Ключ очищен';
+      document.getElementById('gh-token-input').value = '';
+      localStorage.removeItem('bg_gh_token');
+      document.getElementById('gh-status').textContent = '🛡️ GH_TOKEN хранится в секретах Cloudflare Worker';
     }
 
     function saveTgConfig() {
-      const token = document.getElementById('tg-token-input').value.trim();
+      document.getElementById('tg-token-input').value = '';
+      localStorage.removeItem('bg_tg_token');
       let chat = document.getElementById('tg-chat-input').value.trim();
       const commentsId = document.getElementById('tg-comments-input').value.trim() || DEFAULT_COMMENTS_SITE_ID;
       if (chat && !chat.startsWith('@') && !/^-?\d+$/.test(chat)) {
         chat = '@' + chat.replace(/^https?:\/\/t\.me\//i, '');
         document.getElementById('tg-chat-input').value = chat;
       }
-      localStorage.setItem('bg_tg_token', token);
       localStorage.setItem('bg_tg_chat', chat);
       localStorage.setItem('bg_tg_comments_id', commentsId);
       updateChannelLinks();
-      document.getElementById('tg-status').textContent = (token && chat) ? '✅ TG подключён' : '⚠️ Заполните токен и канал';
+      document.getElementById('tg-status').textContent = '🛡️ TG_TOKEN в Worker; канал и comments.app сохранены';
     }
 
     function formatTgHashtags(a) {
@@ -924,10 +944,7 @@
     }
 
     async function sendToTelegram(a, isTest = false) {
-      const botToken = localStorage.getItem('bg_tg_token');
-      const chatId = localStorage.getItem('bg_tg_chat');
-      if (!botToken || !chatId) return { skipped: true };
-
+      const chatId = (localStorage.getItem('bg_tg_chat') || ('@' + DEFAULT_TG_CHANNEL)).trim();
       const pageUrl = isTest ? `${SITE_URL}/` : `${SITE_URL}/p/${a.id}.html`;
       const candidates = buildImageCandidates(a.image);
       const hashtags = formatTgHashtags(a);
@@ -942,79 +959,18 @@
         `\n👉 <a href="${pageUrl}">Читать полностью на BUGROVGAMES</a>`
       ].filter(line => line !== null && line !== undefined).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 
-      let lastPhotoErr = '';
-
-      // 1) Пробуем скачать картинку напрямую (из корня bugrovgames.com/... или по внешней ссылке) и залить в Telegram через multipart/form-data
-      if (caption.length <= 1020) {
-        for (const imgUrl of candidates) {
-          const blob = await fetchImageBlob(imgUrl);
-          if (blob) {
-            try {
-              const ext = (blob.type && blob.type.includes('png')) ? 'png' : ((blob.type && blob.type.includes('webp')) ? 'webp' : 'jpg');
-              const formData = new FormData();
-              formData.append('chat_id', chatId);
-              formData.append('photo', blob, `cover.${ext}`);
-              formData.append('caption', caption);
-              formData.append('parse_mode', 'HTML');
-
-              const upRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-              });
-              const upData = await upRes.json();
-              if (upData.ok) return { ok: true, mode: 'photo_upload', usedUrl: imgUrl };
-              lastPhotoErr = upData.description || 'upload failed';
-            } catch (err) {
-              lastPhotoErr = err.message || 'upload network error';
-            }
-          }
-
-          // 2) Запасной вариант: передаём Telegram прямой URL картинки
-          try {
-            const photoRes = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                chat_id: chatId,
-                photo: imgUrl,
-                caption: caption,
-                parse_mode: 'HTML'
-              })
-            });
-            const photoData = await photoRes.json();
-            if (photoData.ok) return { ok: true, mode: 'photo_url', usedUrl: imgUrl };
-            lastPhotoErr = photoData.description || 'url failed';
-          } catch (err) {
-            lastPhotoErr = err.message || 'url network error';
-          }
-        }
-      }
-
-      const msgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: caption,
-          parse_mode: 'HTML',
-          link_preview_options: { url: pageUrl, prefer_large_media: true }
-        })
+      const data = await callWorker({
+        action: 'telegram_post',
+        chatId,
+        caption,
+        pageUrl,
+        imageCandidates: candidates
       });
-      const msgData = await msgRes.json();
-      if (!msgData.ok) {
-        throw new Error(msgData.description || 'Ошибка Telegram API');
-      }
-      return { ok: true, mode: 'message', photoError: lastPhotoErr };
+      return data.tg || { ok: true };
     }
 
     async function testTelegramPost() {
       saveTgConfig();
-      const botToken = localStorage.getItem('bg_tg_token');
-      const chatId = localStorage.getItem('bg_tg_chat');
-      if (!botToken || !chatId) {
-        alert('Сначала введи Bot Token от @BotFather и @username канала!');
-        return;
-      }
       try {
         await sendToTelegram({
           id: 'test',
@@ -1030,58 +986,66 @@
       }
     }
 
+    function buildSitemapXml() {
+      const today = new Date().toISOString().split('T')[0];
+      const published = articles.filter(a => a.status === 'published');
+      const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
+    }
+
     async function syncToGitHub(commitMsg, articleToGenerate = null, postToTelegram = false) {
-      const token = localStorage.getItem('bg_gh_token');
-      if (!token) {
-        alert('Чтобы сохранить изменения на сайт для всех читателей, вставь свой GitHub Token в Кабинете Главреда!');
-        return;
-      }
       try {
-        await updateGitHubFile('articles.json', JSON.stringify(articles, null, 2), commitMsg, token);
+        const filesToSync = [
+          {
+            path: 'articles.json',
+            content: JSON.stringify(articles, null, 2),
+            message: commitMsg
+          }
+        ];
 
         if (articleToGenerate && articleToGenerate.status === 'published') {
-          await updateGitHubFile(
-            `p/${articleToGenerate.id}.html`,
-            buildArticleHtmlPage(articleToGenerate),
-            `SEO page: p/${articleToGenerate.id}.html`,
-            token
-          );
+          filesToSync.push({
+            path: `p/${articleToGenerate.id}.html`,
+            content: buildArticleHtmlPage(articleToGenerate),
+            message: `SEO page: p/${articleToGenerate.id}.html`
+          });
         }
 
-        const today = new Date().toISOString().split('T')[0];
-        const published = articles.filter(a => a.status === 'published');
-        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
-        const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
-        await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: update sitemap.xml', token);
+        filesToSync.push({
+          path: 'sitemap.xml',
+          content: buildSitemapXml(),
+          message: 'SEO: update sitemap.xml'
+        });
+
+        await callWorker({
+          action: 'github_sync',
+          repoOwner: REPO_OWNER,
+          repoName: REPO_NAME,
+          files: filesToSync
+        });
 
         let tgNote = '';
         if (postToTelegram && articleToGenerate && articleToGenerate.status === 'published') {
           try {
-            // Ждём 15 секунд, чтобы файлы на GitHub Pages успели обновиться
             await new Promise(resolve => setTimeout(resolve, 15000));
             const tgRes = await sendToTelegram(articleToGenerate, false);
             if (tgRes && tgRes.ok) {
               tgNote = tgRes.mode === 'photo'
                 ? '\n✈️ Анонс с обложкой отправлен в Telegram-канал!'
-                : '\n✈️ Анонс отправлен в Telegram-канал (без фото — проверь ссылку на картинку).';
+                : '\n✈️ Анонс отправлен в Telegram-канал.';
             }
           } catch (tgErr) {
             tgNote = `\n⚠️ Статья на сайте сохранена, но пост в Telegram не ушёл: ${tgErr.message}`;
           }
         }
 
-        alert('✅ Сохранено на GitHub! Страница статьи и sitemap.xml обновятся через ~30 секунд.' + tgNote);
+        alert('✅ Сохранено через Cloudflare Worker! Страница статьи и sitemap.xml обновятся через ~30 секунд.' + tgNote);
       } catch (err) {
-        alert('Ошибка сохранения на GitHub: ' + err.message);
+        alert('Ошибка сохранения: ' + err.message);
       }
     }
 
     async function rebuildAllSeoPages() {
-      const token = localStorage.getItem('bg_gh_token');
-      if (!token) {
-        alert('Сначала вставь и сохрани GitHub Token в Кабинете Главреда!');
-        return;
-      }
       const published = articles.filter(a => a.status === 'published');
       if (!published.length) {
         alert('Опубликованных статей пока нет.');
@@ -1090,34 +1054,27 @@
       if (!confirm(`Пересобрать отдельные SEO-страницы (p/id.html) для всех ${published.length} опубликованных статей и обновить sitemap.xml?`)) return;
 
       try {
-        for (const a of published) {
-          await updateGitHubFile(`p/${a.id}.html`, buildArticleHtmlPage(a), `SEO page: p/${a.id}.html`, token);
-        }
-        const today = new Date().toISOString().split('T')[0];
-        const urlsXml = published.map(a => `  <url>\n    <loc>${SITE_URL}/p/${a.id}.html</loc>\n    <lastmod>${a.date || today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
-        const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n${urlsXml}\n</urlset>`;
-        await updateGitHubFile('sitemap.xml', sitemapXml, 'SEO: rebuild all article pages & sitemap.xml', token);
+        const filesToSync = published.map(a => ({
+          path: `p/${a.id}.html`,
+          content: buildArticleHtmlPage(a),
+          message: `SEO page: p/${a.id}.html`
+        }));
+        filesToSync.push({
+          path: 'sitemap.xml',
+          content: buildSitemapXml(),
+          message: 'SEO: rebuild all article pages & sitemap.xml'
+        });
+
+        await callWorker({
+          action: 'github_sync',
+          repoOwner: REPO_OWNER,
+          repoName: REPO_NAME,
+          files: filesToSync
+        });
         alert(`🎉 Готово! Обновлено ${published.length} страниц в папке p/ и sitemap.xml.`);
       } catch (err) {
         alert('Ошибка при генерации страниц: ' + err.message);
       }
-    }
-
-    async function updateGitHubFile(path, contentStr, message, token) {
-      const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-      const getRes = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
-      let sha = undefined;
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        sha = fileData.sha;
-      }
-      const encoded = btoa(unescape(encodeURIComponent(contentStr)));
-      const putRes = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, content: encoded, sha })
-      });
-      if (!putRes.ok) throw new Error(await putRes.text());
     }
 
     function renderCategories() {
@@ -1526,18 +1483,12 @@
     async function publishArticleToTelegram(id) {
       const a = articles.find(x => String(x.id) === String(id));
       if (!a) return;
-      const botToken = localStorage.getItem('bg_tg_token');
-      const chatId = localStorage.getItem('bg_tg_chat');
-      if (!botToken || !chatId) {
-        alert('Сначала заполни и сохрани Bot Token и @username канала в разделе «Автопостинг Telegram»!');
-        return;
-      }
       try {
         const res = await sendToTelegram(a, false);
         if (res && res.ok) {
           alert(res.mode && res.mode.startsWith('photo')
             ? `✈️ Пост с обложкой успешно опубликован в Telegram! (${res.usedUrl || ''})`
-            : `✈️ Пост опубликован в Telegram без фото (${res.photoError || 'проверь доступность файла картинки'}).`);
+            : `✈️ Пост опубликован в Telegram.`);
         } else {
           alert('⚠️ Отправка пропущена: проверь настройки Telegram.');
         }
