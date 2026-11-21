@@ -1,7 +1,7 @@
 [
   {
     "id": 1795222860229,
-    "status": "draft",
+    "status": "published",
     "category": "Обзоры",
     "title": "Хоррор BrokenLore: DON’T PLAY получит расширенное издание для гибридной консоли Nintendo Switch 2",
     "excerpt": "Издательство Gematsu поделилось подробностями о разработке психологического хоррора BrokenLore: DON’T PLAY, который заглянет на грядущую платформу от Nintendo.",
@@ -16,7 +16,7 @@
       "Gematsu",
       "Insider Gaming"
     ],
-    "image": "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/brokenlore_cover.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
