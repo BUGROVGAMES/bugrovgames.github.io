@@ -13,7 +13,7 @@ const existingSummaries = recentArticles
   .join('\n- ');
 const recentImages = new Set(articles.slice(0, 15).map(a => a.image).filter(Boolean));
 
-const ALL_CATEGORIES = ['ПК и Консоли', 'Инди', 'Киберспорт', 'Обзоры', 'Индустрия'];
+const ALL_CATEGORIES = ['ПК и Консоли', 'Инди', 'Киберспорт', 'Новинки и резонанс', 'Индустрия'];
 
 // Выбираем целевую рубрику, которой давно не было в последних публикациях
 function pickTargetCategory() {
@@ -32,24 +32,24 @@ function pickTargetCategory() {
 const TARGET_CATEGORY = pickTargetCategory();
 
 const RSS_FEEDS = [
-  'https://www.videogameschronicle.com/feed/',
-  'https://www.eurogamer.net/feed',
-  'https://www.pcgamer.com/rss/',
-  'https://feeds.feedburner.com/ign/games-all',
-  'https://www.gamespot.com/feeds/game-news/',
-  'https://www.rockpapershotgun.com/feed',
-  'https://www.gematsu.com/feed',
-  'https://insider-gaming.com/feed/',
-  'https://www.polygon.com/rss/index.xml',
-  'https://kotaku.com/rss',
-  'https://www.gamesradar.com/rss/',
-  'https://www.dsogaming.com/feed/',
-  'https://wccftech.com/feed/',
-  'https://www.tomshardware.com/feeds/all',
-  'https://www.techpowerup.com/rss/news',
-  'https://dotesports.com/feed',
-  'https://www.hltv.org/rss/news',
-  'https://indiegamesplus.com/feed'
+  '[https://www.videogameschronicle.com/feed/](https://www.videogameschronicle.com/feed/)',
+  '[https://www.eurogamer.net/feed](https://www.eurogamer.net/feed)',
+  '[https://www.pcgamer.com/rss/](https://www.pcgamer.com/rss/)',
+  '[https://feeds.feedburner.com/ign/games-all](https://feeds.feedburner.com/ign/games-all)',
+  '[https://www.gamespot.com/feeds/game-news/](https://www.gamespot.com/feeds/game-news/)',
+  '[https://www.rockpapershotgun.com/feed](https://www.rockpapershotgun.com/feed)',
+  '[https://www.gematsu.com/feed](https://www.gematsu.com/feed)',
+  '[https://insider-gaming.com/feed/](https://insider-gaming.com/feed/)',
+  '[https://www.polygon.com/rss/index.xml](https://www.polygon.com/rss/index.xml)',
+  '[https://kotaku.com/rss](https://kotaku.com/rss)',
+  '[https://www.gamesradar.com/rss/](https://www.gamesradar.com/rss/)',
+  '[https://www.dsogaming.com/feed/](https://www.dsogaming.com/feed/)',
+  '[https://wccftech.com/feed/](https://wccftech.com/feed/)',
+  '[https://www.tomshardware.com/feeds/all](https://www.tomshardware.com/feeds/all)',
+  '[https://www.techpowerup.com/rss/news](https://www.techpowerup.com/rss/news)',
+  '[https://dotesports.com/feed](https://dotesports.com/feed)',
+  '[https://www.hltv.org/rss/news](https://www.hltv.org/rss/news)',
+  '[https://indiegamesplus.com/feed](https://indiegamesplus.com/feed)'
 ];
 
 const SOURCES_BASE = {
@@ -66,93 +66,93 @@ const SOURCES_BASE = {
     'vg247.com', 'gamesindustry.biz', 'gamedeveloper.com', 'gematsu.com', 'destructoid.com',
     'escapistmagazine.com', 'shacknews.com', 'thegamer.com', 'pcgamesn.com', 'pushsquare.com',
     'purexbox.com', 'nintendolife.com', 'dexerto.com', 'insider-gaming.com', 'dsogaming.com',
-    'wccftech.com', 'digitaltrends.com/gaming', 'windowscentral.com/gaming', 'tweaktown.com',
-    'venturebeat.com/games', 'arstechnica.com/gaming', 'theverge.com/games', 'wired.com/tag/video-games',
+    'wccftech.com', '[digitaltrends.com/gaming](https://digitaltrends.com/gaming)', '[windowscentral.com/gaming](https://windowscentral.com/gaming)', 'tweaktown.com',
+    '[venturebeat.com/games](https://venturebeat.com/games)', '[arstechnica.com/gaming](https://arstechnica.com/gaming)', '[theverge.com/games](https://theverge.com/games)', '[wired.com/tag/video-games](https://wired.com/tag/video-games)',
     'dualshockers.com', 'siliconera.com', 'rpgsite.net', 'mmorpg.com', 'massivelyop.com',
     'steamdb.info', 'howlongtobeat.com', 'metacritic.com', 'opencritic.com', 'dtf.ru',
     'stopgame.ru', 'igromania.ru', 'ixbt.games', 'playground.ru', 'kanobu.ru',
     'cybersport.ru', 'hltv.org', 'liquipedia.net', 'dotesports.com', 'indiegamesplus.com'
   ],
   hardware_vendors: [
-    'nvidia.com', 'amd.com', 'intel.com', 'asus.com/rog', 'msi.com',
+    'nvidia.com', 'amd.com', 'intel.com', '[asus.com/rog](https://asus.com/rog)', 'msi.com',
     'gigabyte.com', 'corsair.com', 'razer.com', 'logitechg.com', 'steelseries.com',
-    'hyperx.com', 'samsung.com/semiconductor', 'kingston.com', 'western-digital.com',
+    'hyperx.com', '[samsung.com/semiconductor](https://samsung.com/semiconductor)', 'kingston.com', 'western-digital.com',
     'tomshardware.com', 'techpowerup.com', 'anandtech.com', 'digitalfoundry.net'
   ],
   x_accounts: [
-    'x.com/geoffkeighley', 'x.com/jasonschreier', 'x.com/TomHenderson_', 'x.com/shinobi602',
-    'x.com/Wario64', 'x.com/SteamDB', 'x.com/RockstarGames', 'x.com/CDPROJEKTRED',
-    'x.com/HIDEO_KOJIMA_EN', 'x.com/SwenVincke', 'x.com/Neil_Druckmann', 'x.com/PhilSpencer',
-    'x.com/PlayStation', 'x.com/Xbox', 'x.com/NintendoAmerica', 'x.com/NVIDIAGeForce',
-    'x.com/AMDRadeon', 'x.com/IntelGaming', 'x.com/IGN', 'x.com/VGC_News'
+    '[x.com/geoffkeighley](https://x.com/geoffkeighley)', '[x.com/jasonschreier](https://x.com/jasonschreier)', '[x.com/TomHenderson](https://x.com/TomHenderson)_', '[x.com/shinobi602](https://x.com/shinobi602)',
+    '[x.com/Wario64](https://x.com/Wario64)', '[x.com/SteamDB](https://x.com/SteamDB)', '[x.com/RockstarGames](https://x.com/RockstarGames)', '[x.com/CDPROJEKTRED](https://x.com/CDPROJEKTRED)',
+    '[x.com/HIDEO_KOJIMA_EN](https://x.com/HIDEO_KOJIMA_EN)', '[x.com/SwenVincke](https://x.com/SwenVincke)', '[x.com/Neil_Druckmann](https://x.com/Neil_Druckmann)', '[x.com/PhilSpencer](https://x.com/PhilSpencer)',
+    '[x.com/PlayStation](https://x.com/PlayStation)', '[x.com/Xbox](https://x.com/Xbox)', '[x.com/NintendoAmerica](https://x.com/NintendoAmerica)', '[x.com/NVIDIAGeForce](https://x.com/NVIDIAGeForce)',
+    '[x.com/AMDRadeon](https://x.com/AMDRadeon)', '[x.com/IntelGaming](https://x.com/IntelGaming)', '[x.com/IGN](https://x.com/IGN)', '[x.com/VGC_News](https://x.com/VGC_News)'
   ]
 };
 
 // Наборы легальных обложек по платформам (CC0 / Unsplash)
 const PLATFORM_COVERS = {
   playstation: [
-    'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=1200&q=80)'
   ],
   xbox: [
-    'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1621259182978-fbf93132d53d?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=1200&q=80)'
   ],
   nintendo: [
-    'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1585857188892-938297272031?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1617096200347-cb04ae810b1d?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1585857188892-938297272031?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1585857188892-938297272031?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1617096200347-cb04ae810b1d?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1617096200347-cb04ae810b1d?auto=format&fit=crop&w=1200&q=80)'
   ],
   steam: [
-    'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80)'
   ],
   hardware: [
-    'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80)'
   ]
 };
 
 // Наборы легальных стоковых обложек по рубрикам (CC0 / Unsplash)
 const LEGAL_FALLBACK_COVERS = {
   'ПК и Консоли': [
-    'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80)'
   ],
   'Инди': [
-    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?auto=format&fit=crop&w=1200&q=80)'
   ],
   'Киберспорт': [
-    'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1200&q=80)'
   ],
-  'Обзоры': [
-    'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1580327344181-c1163234e5a0?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80'
+  'Новинки и резонанс': [
+    '[https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1580327344181-c1163234e5a0?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1580327344181-c1163234e5a0?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80)'
   ],
   'Индустрия': [
-    'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80'
+    '[https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80)',
+    '[https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80](https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80)'
   ]
 };
 
@@ -168,12 +168,12 @@ const CATEGORY_HINTS = {
   'ПК и Консоли': 'крупный релиз, анонс, трейлер или обновление для ПК, PlayStation, Xbox или Nintendo Switch',
   'Инди': 'яркий инди-хит из Steam, релиз от независимой студии, успех необычной игры в раннем доступе или инди-фестиваль',
   'Киберспорт': 'крупный турнир, решающий матч, трансфер игроков или патч баланса в Counter-Strike 2, Dota 2, League of Legends, Valorant или Apex Legends',
-  'Обзоры': 'разбор вышедшей на днях игры: оценки критиков на Metacritic/OpenCritic, отзывы игроков в Steam, плюсы, минусы и техническое состояние',
+  'Новинки и резонанс': 'разбор свежих релизов, расширенных изданий и стартов: оценки критиков на Metacritic/OpenCritic, отзывы игроков в Steam, рекорды онлайна или споры вокруг выхода игры',
   'Индустрия': 'бизнес, финансы, отчёты продаж, сделки студий, кадровые перестановки, суды или игровое железо (NVIDIA, AMD, Intel)'
 };
 
 async function getAvailableModels() {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
+  const res = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models?key=$](https://generativelanguage.googleapis.com/v1beta/models?key=$){GEMINI_API_KEY}`);
   if (!res.ok) return ['gemini-2.5-flash', 'gemini-2.0-flash'];
   const data = await res.json();
   const names = (data.models || [])
@@ -215,14 +215,14 @@ async function findSteamCover(gameTitle) {
   if (!gameTitle || gameTitle.toLowerCase() === 'none') return null;
   try {
     const query = encodeURIComponent(gameTitle.trim());
-    const res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${query}&l=english&cc=US`);
+    const res = await fetch(`[https://store.steampowered.com/api/storesearch/?term=$](https://store.steampowered.com/api/storesearch/?term=$){query}&l=english&cc=US`);
     if (!res.ok) return null;
     const data = await res.json();
     const match = (data.items || []).find(item => item.type === 'app') || data.items?.[0];
     if (match && match.id) {
-      const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/header.jpg`;
+      const headerUrl = `[https://cdn.akamai.steamstatic.com/steam/apps/$](https://cdn.akamai.steamstatic.com/steam/apps/$){match.id}/header.jpg`;
       if (recentImages.has(headerUrl)) {
-        const heroUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/library_hero.jpg`;
+        const heroUrl = `[https://cdn.akamai.steamstatic.com/steam/apps/$](https://cdn.akamai.steamstatic.com/steam/apps/$){match.id}/library_hero.jpg`;
         const heroCheck = await fetch(heroUrl, { method: 'HEAD' });
         if (heroCheck.ok && !recentImages.has(heroUrl)) return heroUrl;
       }
@@ -234,7 +234,7 @@ async function findSteamCover(gameTitle) {
 }
 
 function buildPrompt(rssContext, targetCategory, rejectedTopics = []) {
-  const timeWindow = ['Обзоры', 'Киберспорт'].includes(targetCategory) ? '24–72 часа' : '24–48 часов';
+  const timeWindow = ['Новинки и резонанс', 'Киберспорт'].includes(targetCategory) ? '24–72 часа' : '24–48 часов';
 
   return `Ты — выпускающий редактор и ведущий аналитик игрового медиапортала BUGROVGAMES.
 Твоя задача — подготовить ОДИН качественный материал специально для рубрики «${targetCategory}» (фокус: ${CATEGORY_HINTS[targetCategory]}), опираясь на свежие события за последние ${timeWindow}.
@@ -259,7 +259,7 @@ ${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ �
    - Абзац 3 (Бэкграунд и контекст): История вопроса, сравнение с предыдущими релизами студии или поколениями железа.
    - Абзац 4 (Редакторский вывод): Что это значит для игроков и чего ждать дальше.
 5. ТОЧНЫЙ ПОДБОР ОФИЦИАЛЬНОЙ ОБЛОЖКИ (СТРОГАЯ ИЕРАРХИЯ):
-   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, обзоры или киберспорт — например, "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название из Steam, а в "platformBrand" напиши "none". Не пиши невышедшие сиквелы без страницы в Steam (вместо "XCOM 3" пиши "XCOM 2", вместо "GTA 6" пиши "Grand Theft Auto V").
+   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, новинки/резонанс или киберспорт — например, "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название из Steam, а в "platformBrand" напиши "none". Не пиши невышедшие сиквелы без страницы в Steam (вместо "XCOM 3" пиши "XCOM 2", вместо "GTA 6" пиши "Grand Theft Auto V").
    - Шаг Б (Корпорации, суды, консоли, магазины, подписки): Если новость касается корпорации, судебного разбирательства, цифрового магазина, прошивки консоли или подписки БЕЗ конкретной игры (например: суд против Sony / PlayStation Store, цены на Xbox Game Pass, продажи Nintendo Switch, правила Valve / Steam, видеокарты NVIDIA / AMD) — НЕ подставляй случайную игру! В полях "exactGameName" и "backupGameName" напиши "none", а в поле "platformBrand" укажи одно из значений: "playstation", "xbox", "nintendo", "steam" или "hardware".
    - Шаг В (Разработчик игр без конкретной игры): Если новость касается именно игровой студии-разработчика (например, кризис в Firaxis, увольнения в Larian или Remedy) и в тексте упоминается или подразумевается их главная франшиза — укажи её в "exactGameName" ("XCOM 2", "Baldur's Gate 3", "Control Ultimate Edition"), а "platformBrand" поставь "none".
    - В поле "backupGameName" укажи вторую запасную игру этой студии/серии в Steam или "none".
@@ -284,7 +284,7 @@ ${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ �
 }
 
 async function callGemini(model, prompt, useGoogleSearch) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){model}:generateContent?key=${GEMINI_API_KEY}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { temperature: 0.45 }
@@ -474,3 +474,11 @@ run().catch(err => {
   console.error(err);
   process.exit(1);
 });
+```[cite: 15]
+
+---
+
+### Что ещё стоит сделать после обновления файлов
+* Если в `articles.json` уже есть старые материалы с `"category": "Обзоры"`, их можно перевести в `"Новинки и резонанс"` (или оставить в отдельной рубрике, когда будешь писать настоящие авторские обзоры) и нажать в Кабинете Главреда кнопку пересборки страниц `p/id.html` и `sitemap.xml`[cite: 14, 15].
+
+Готово — что дальше улучшаем на сайте или в боте?
