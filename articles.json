@@ -2,7 +2,7 @@
   {
     "id": 1795276946104,
     "status": "published",
-    "category": "Обзоры",
+    "category": "Новинки и резонанс",
     "title": "Обзор Grand Theft Auto VI: Почему при 99 баллах на Metacritic игроки в ярости?",
     "excerpt": "Разбираемся в феноменальном расколе Grand Theft Auto VI: исторические рекорды продаж и восторги критиков столкнулись с ревью-бомбингом и техническим кризисом на консолях.",
     "content": [
@@ -24,7 +24,7 @@
     "image": "./images/gta6_cover2.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 5,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -35,7 +35,8 @@
       "Xbox Series X",
       "Леонида"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795266065246,
