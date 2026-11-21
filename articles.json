@@ -1,7 +1,7 @@
 [
   {
     "id": 1795266065246,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Студия Arika подтвердила уход из жизни директора и ветерана индустрии Акиры Курабаяси",
     "excerpt": "Игровая индустрия понесла тяжелую утрату: на 57-року жизни скончался сооснователь и директор компании Arika Акира Курабаяси, стоявший у истоков культовых файтингов и аркадных проектов.",
@@ -16,7 +16,7 @@
       "www.rockpapershotgun.com",
       "Gematsu"
     ],
-    "image": "https://cdn.akamai.steamstatic.com/steam/apps/2459911/header.jpg",
+    "image": "./images/akira.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
