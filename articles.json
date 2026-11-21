@@ -1,7 +1,7 @@
 [
   {
     "id": 1795233959163,
-    "status": "draft",
+    "status": "published",
     "category": "Инди",
     "title": "Хоррор Ugly Within от Yamaitachi выйдет на ПК и консолях под эгидой Serafini Productions",
     "excerpt": "Издательство Serafini Productions объявило о подписании соглашения на выпуск жуткого триллера Ugly Within на широком спектре платформ, включая новое поколение консолей.",
@@ -16,7 +16,7 @@
       "Gematsu",
       "Serafini Productions"
     ],
-    "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/ugly-within.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
     "views": 0,
@@ -51,7 +51,7 @@
     "image": "./images/brokenlore_cover.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "BrokenLore: DON'T PLAY",
@@ -59,7 +59,8 @@
       "Хороры",
       "Инди"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795212103455,
