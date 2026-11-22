@@ -1,7 +1,7 @@
 [
   {
     "id": 1795390376717,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Отказ от лишнего: почему разработчики Grand Theft Auto 6 сознательно урезали контент перед релизом",
     "excerpt": "Представители студии Rockstar Games поделились закулисными подробностями разработки Grand Theft Auto 6, объяснив причины отсутствия некоторых культовых мини-игр и особенности создания персонажей.",
@@ -16,7 +16,7 @@
       "www.eurogamer.net",
       "feeds.feedburner.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/808b550269f898e227dae2c64b5e026f90da85f9/ss_808b550269f898e227dae2c64b5e026f90da85f9.1920x1080.jpg",
+    "image": "./images/gta6_cover5.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
     "views": 0,
