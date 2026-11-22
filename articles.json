@@ -1,7 +1,7 @@
 [
   {
     "id": 1795375146805,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Grand Theft Auto 6 приносит Take-Two Interactive почти 4 миллиарда долларов за первые сутки",
     "excerpt": "Релиз криминального экшена Grand Theft Auto 6 установил абсолютный рекорд в истории индустрии развлечений, преодолев отметку в 32,5 миллиона проданных копий за первые 24 часа.",
@@ -16,7 +16,7 @@
       "gamespot.com",
       "eurogamer.net"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1546990/ss_778d72865d6f09ba99b43f10c2b29e0537781a85.1920x1080.jpg",
+    "image": "./images/gra6_cover3.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
     "views": 0,
@@ -113,7 +113,7 @@
     "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3681010/c65877619b70c51d6be030c20b5c37bcfaf2e248/ss_c65877619b70c51d6be030c20b5c37bcfaf2e248.1920x1080.jpg?t=1772090941",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 3,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Nioh 3",
@@ -175,7 +175,7 @@
     "image": "https://cdn.akamai.steamstatic.com/steam/apps/570/library_hero.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -183,7 +183,8 @@
       "BLAST Slam",
       "Турниры"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795298507138,
