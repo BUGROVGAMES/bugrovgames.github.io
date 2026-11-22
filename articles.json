@@ -16,10 +16,10 @@
       "www.eurogamer.net",
       "feeds.feedburner.com"
     ],
-    "image": "./images/gra6_cover5.jpg",
+    "image": "./images/gta6_cover5.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -28,7 +28,8 @@
       "Разработка игр",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795375146805,
