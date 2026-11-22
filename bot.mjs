@@ -210,25 +210,54 @@ async function fetchFreshRssNews() {
   return items.slice(0, 45).join('\n');
 }
 
-// Поиск официального пресс-постера или фонового арта игры в Steam Store API
+// Поиск официальных HD-скриншотов, hero-арта или обложки игры в Steam Store API
 async function findSteamCover(gameTitle) {
   if (!gameTitle || gameTitle.toLowerCase() === 'none') return null;
   try {
-    const query = encodeURIComponent(gameTitle.trim());
+    const cleanTitle = gameTitle.trim();
+    const query = encodeURIComponent(cleanTitle);
     const res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${query}&l=english&cc=US`);
     if (!res.ok) return null;
     const data = await res.json();
-    const match = (data.items || []).find(item => item.type === 'app') || data.items?.[0];
-    if (match && match.id) {
-      const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/header.jpg`;
-      if (recentImages.has(headerUrl)) {
-        const heroUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/library_hero.jpg`;
-        const heroCheck = await fetch(heroUrl, { method: 'HEAD' });
-        if (heroCheck.ok && !recentImages.has(heroUrl)) return heroUrl;
+    const apps = (data.items || []).filter(item => item.type === 'app');
+    if (!apps.length) return null;
+
+    // Приоритет: точное совпадение названия -> вхождение -> первый результат
+    const lowerTarget = cleanTitle.toLowerCase();
+    const match =
+      apps.find(item => item.name.toLowerCase() === lowerTarget) ||
+      apps.find(item => item.name.toLowerCase().includes(lowerTarget)) ||
+      apps[0];
+
+    if (!match || !match.id) return null;
+
+    // 1. Пробуем забрать официальные HD-скриншоты (1920x1080) со страницы игры
+    try {
+      const detailsRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${match.id}&cc=US&l=english`);
+      if (detailsRes.ok) {
+        const detailsJson = await detailsRes.json();
+        const appData = detailsJson?.[String(match.id)]?.data;
+        const screenshots = (appData?.screenshots || [])
+          .map(s => s.path_full?.split('?')[0])
+          .filter(Boolean);
+
+        if (screenshots.length > 0) {
+          const unusedShots = screenshots.filter(url => !recentImages.has(url));
+          const pool = unusedShots.length > 0 ? unusedShots : screenshots;
+          return pool[Math.floor(Math.random() * pool.length)];
+        }
       }
-      const check = await fetch(headerUrl, { method: 'HEAD' });
-      if (check.ok) return headerUrl;
-    }
+    } catch (_) {}
+
+    // 2. Если скриншотов нет — пробуем широкоформатный library_hero.jpg
+    const heroUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/library_hero.jpg`;
+    const heroCheck = await fetch(heroUrl, { method: 'HEAD' });
+    if (heroCheck.ok && !recentImages.has(heroUrl)) return heroUrl;
+
+    // 3. Запасной вариант — стандартный header.jpg
+    const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/header.jpg`;
+    const headerCheck = await fetch(headerUrl, { method: 'HEAD' });
+    if (headerCheck.ok) return headerUrl;
   } catch (_) {}
   return null;
 }
@@ -259,7 +288,7 @@ ${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ �
    - Абзац 3 (Бэкграунд и контекст): История вопроса, сравнение с предыдущими релизами студии или поколениями железа.
    - Абзац 4 (Редакторский вывод): Что это значит для игроков и чего ждать дальше.
 5. ТОЧНЫЙ ПОДБОР ОФИЦИАЛЬНОЙ ОБЛОЖКИ (СТРОГАЯ ИЕРАРХИЯ):
-   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, новинки/резонанс или киберспорт — например, "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название из Steam, а в "platformBrand" напиши "none". Не пиши невышедшие сиквелы без страницы в Steam (вместо "XCOM 3" пиши "XCOM 2", вместо "GTA 6" пиши "Grand Theft Auto V").
+   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, новинки/резонанс, анонсированные сиквелы или киберспорт — например, "Nioh 3", "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название (без приписок вроде "Complete Edition", если основная игра называется короче), а в "platformBrand" напиши "none". Предыдущую часть серии указывай ТОЛЬКО в "backupGameName" на случай, если у новой игры ещё нет страницы в Steam.
    - Шаг Б (Корпорации, суды, консоли, магазины, подписки): Если новость касается корпорации, судебного разбирательства, цифрового магазина, прошивки консоли или подписки БЕЗ конкретной игры (например: суд против Sony / PlayStation Store, цены на Xbox Game Pass, продажи Nintendo Switch, правила Valve / Steam, видеокарты NVIDIA / AMD) — НЕ подставляй случайную игру! В полях "exactGameName" и "backupGameName" напиши "none", а в поле "platformBrand" укажи одно из значений: "playstation", "xbox", "nintendo", "steam" или "hardware".
    - Шаг В (Разработчик игр без конкретной игры): Если новость касается именно игровой студии-разработчика (например, кризис в Firaxis, увольнения в Larian или Remedy) и в тексте упоминается или подразумевается их главная франшиза — укажи её в "exactGameName" ("XCOM 2", "Baldur's Gate 3", "Control Ultimate Edition"), а "platformBrand" поставь "none".
    - В поле "backupGameName" укажи вторую запасную игру этой студии/серии в Steam или "none".
