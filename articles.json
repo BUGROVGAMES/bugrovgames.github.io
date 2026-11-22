@@ -1,7 +1,7 @@
 [
   {
     "id": 1795352593942,
-    "status": "draft",
+    "status": "published",
     "category": "Инди",
     "title": "Цифровой видеопрокат Alt Video переносит атмосферу эпохи Blockbuster на экраны ПК",
     "excerpt": "Инди-разработчики представили симулятор Alt Video, который превращает личные списки фильмов в интерактивный фальшивый видеомагазин.",
@@ -15,7 +15,7 @@
     "sourcesUsed": [
       "www.rockpapershotgun.com"
     ],
-    "image": "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/altvideo.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
     "views": 0,
@@ -307,7 +307,7 @@
     "image": "./images/nvidia.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-21",
-    "views": 4,
+    "views": 5,
     "likes": 0,
     "tags": [
       "NVIDIA",
