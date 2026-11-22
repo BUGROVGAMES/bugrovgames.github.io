@@ -15,21 +15,12 @@ const recentImages = new Set(articles.slice(0, 15).map(a => a.image).filter(Bool
 
 const ALL_CATEGORIES = ['ПК и Консоли', 'Инди', 'Киберспорт', 'Новинки и резонанс', 'Индустрия'];
 
-// Выбираем целевую рубрику, которой давно не было в последних публикациях
-function pickTargetCategory() {
-  const recentCategories = articles.slice(0, 4).map(a => a.category);
-  const missing = ALL_CATEGORIES.filter(cat => !recentCategories.includes(cat));
-  if (missing.length > 0) {
-    return missing[Math.floor(Math.random() * missing.length)];
-  }
-  const counts = Object.fromEntries(ALL_CATEGORIES.map(c => [c, 0]));
-  for (const a of articles) {
-    if (counts[a.category] !== undefined) counts[a.category]++;
-  }
-  return ALL_CATEGORIES.sort((a, b) => counts[a] - counts[b])[0];
+// Определяем рубрики, которых не было в последних 3 публикациях (для мягкого баланса)
+function getPreferredCategories() {
+  const recentCategories = articles.slice(0, 3).map(a => a.category);
+  const fresh = ALL_CATEGORIES.filter(cat => !recentCategories.includes(cat));
+  return fresh.length > 0 ? fresh : ALL_CATEGORIES;
 }
-
-const TARGET_CATEGORY = pickTargetCategory();
 
 const RSS_FEEDS = [
   'https://www.videogameschronicle.com/feed/',
@@ -156,21 +147,12 @@ const LEGAL_FALLBACK_COVERS = {
   ]
 };
 
-// Выбираем из набора картинку, которая ещё не встречалась в последних 15 статьях
 function pickUnusedCover(pool) {
   if (!Array.isArray(pool) || pool.length === 0) return '';
   const unused = pool.filter(url => !recentImages.has(url));
   const candidates = unused.length > 0 ? unused : pool;
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
-
-const CATEGORY_HINTS = {
-  'ПК и Консоли': 'крупный релиз, анонс, трейлер или обновление для ПК, PlayStation, Xbox или Nintendo Switch',
-  'Инди': 'яркий инди-хит из Steam, релиз от независимой студии, успех необычной игры в раннем доступе или инди-фестиваль',
-  'Киберспорт': 'крупный турнир, решающий матч, трансфер игроков или патч баланса в Counter-Strike 2, Dota 2, League of Legends, Valorant или Apex Legends',
-  'Новинки и резонанс': 'разбор свежих релизов, расширенных изданий и стартов: оценки критиков на Metacritic/OpenCritic, отзывы игроков в Steam, рекорды онлайна или споры вокруг выхода игры',
-  'Индустрия': 'бизнес, финансы, отчёты продаж, сделки студий, кадровые перестановки, суды или игровое железо (NVIDIA, AMD, Intel)'
-};
 
 async function getAvailableModels() {
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
@@ -183,7 +165,7 @@ async function getAvailableModels() {
   return names.length ? names : ['gemini-2.5-flash'];
 }
 
-// Парсим ТОЛЬКО заголовки, ссылки на первоисточники и факты (без чужих картинок)
+// Парсим свежие заголовки и факты из RSS
 async function fetchFreshRssNews() {
   const items = [];
   for (const feedUrl of RSS_FEEDS) {
@@ -207,7 +189,7 @@ async function fetchFreshRssNews() {
       }
     } catch (_) {}
   }
-  return items.slice(0, 45).join('\n');
+  return items.slice(0, 50).join('\n');
 }
 
 // Поиск официальных HD-скриншотов, hero-арта или обложки игры в Steam Store API
@@ -222,7 +204,6 @@ async function findSteamCover(gameTitle) {
     const apps = (data.items || []).filter(item => item.type === 'app');
     if (!apps.length) return null;
 
-    // Приоритет: точное совпадение названия -> вхождение -> первый результат
     const lowerTarget = cleanTitle.toLowerCase();
     const match =
       apps.find(item => item.name.toLowerCase() === lowerTarget) ||
@@ -249,12 +230,12 @@ async function findSteamCover(gameTitle) {
       }
     } catch (_) {}
 
-    // 2. Если скриншотов нет — пробуем широкоформатный library_hero.jpg
+    // 2. Широкоформатный library_hero.jpg
     const heroUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/library_hero.jpg`;
     const heroCheck = await fetch(heroUrl, { method: 'HEAD' });
     if (heroCheck.ok && !recentImages.has(heroUrl)) return heroUrl;
 
-    // 3. Запасной вариант — стандартный header.jpg
+    // 3. Запасной header.jpg
     const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/header.jpg`;
     const headerCheck = await fetch(headerUrl, { method: 'HEAD' });
     if (headerCheck.ok) return headerUrl;
@@ -262,11 +243,19 @@ async function findSteamCover(gameTitle) {
   return null;
 }
 
-function buildPrompt(rssContext, targetCategory, rejectedTopics = []) {
-  const timeWindow = ['Новинки и резонанс', 'Киберспорт'].includes(targetCategory) ? '24–72 часа' : '24–48 часов';
-
+function buildPrompt(rssContext, preferredCategories, rejectedTopics = []) {
   return `Ты — выпускающий редактор и ведущий аналитик игрового медиапортала BUGROVGAMES.
-Твоя задача — подготовить ОДИН качественный материал специально для рубрики «${targetCategory}» (фокус: ${CATEGORY_HINTS[targetCategory]}), опираясь на свежие события за последние ${timeWindow}.
+Твоя задача — выбрать САМЫЙ ГОРЯЧИЙ, СВЕЖИЙ И ОБСУЖДАЕМЫЙ инфоповод за последние 24–48 часов из всей игровой индустрии и написать по нему ОДИН сильный материал.
+
+КАК ВЫБРАТЬ ТЕМУ И РУБРИКУ:
+1. Главный критерий — масштаб и свежесть события (громкий анонс, неожиданный релиз, крупный скандал/резонанс, рекорды онлайна, высокие/провальные оценки критиков и игроков, важный патч, громкая сделка или железный анонс).
+2. Подбери одну точную рубрику из списка:
+   - «ПК и Консоли» — крупные релизы, анонсы, трейлеры, переносы или обновления для ПК, PlayStation, Xbox и Nintendo Switch;
+   - «Инди» — яркие инди-хиты из Steam, релизы от независимых студий, неожиданные прорывы в раннем доступе;
+   - «Киберспорт» — только действительно крупные финалы турниров, громкие решафлы или важные патчи в CS2, Dota 2, LoL, Valorant (НЕ выдумывай и не бери мелкие слухи, если в киберспорте затишье);
+   - «Новинки и резонанс» — разбор свежих стартов и громких релизов: оценки на Metacritic/OpenCritic, отзывы игроков в Steam, рекорды пикового онлайна, технические проблемы или споры;
+   - «Индустрия» — бизнес, отчёты продаж, сделки студий, увольнения, суды, игровое железо (NVIDIA, AMD, Intel).
+3. Мягкий приоритет (при равной громкости новостей): ${preferredCategories.join(', ')} (этих рубрик не было в последних 3 публикациях, но если в другой рубрике есть объективно более горячая новость — смело бери её).
 
 ${rssContext ? `СВЕЖАЯ СВОДКА ИЗ RSS-ЛЕНТ:\n${rssContext}\n\n` : ''}
 РЕДАКЦИОННАЯ БАЗА ПРИОРИТЕТНЫХ ПЕРВОИСТОЧНИКОВ:
@@ -276,7 +265,7 @@ ${rssContext ? `СВЕЖАЯ СВОДКА ИЗ RSS-ЛЕНТ:\n${rssContext}\n\n`
 4. СОЦСЕТЬ X (комментарии геймдиректоров, инсайдеров, официальные треды): ${SOURCES_BASE.x_accounts.join(', ')}
 
 ЖЁСТКИЕ РЕДАКЦИОННЫЕ И ЮРИДИЧЕСКИЕ ПРАВИЛА:
-1. ЦЕЛЕВАЯ РУБРИКА И УНИКАЛЬНОСТЬ (КРИТИЧНО): Подбери свежую тему для рубрики «${targetCategory}» и укажи в "category" значение "${targetCategory}". КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО писать о событиях, фактах или инфоповодах, которые уже освещались в последних статьях и черновиках на сайте (даже под другим заголовком, с другими цифрами V/VI или с акцентом на другую деталь того же события!).
+1. УНИКАЛЬНОСТЬ (КРИТИЧНО): КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО писать о событиях, фактах или инфоповодах, которые уже освещались в последних статьях и черновиках на сайте (даже под другим заголовком, с другими цифрами V/VI или с акцентом на другую деталь того же события!).
 УЖЕ ОСВЕЩЁННЫЕ ТЕМЫ (НЕ ПОВТОРЯТЬ):
 - ${existingSummaries || 'база пока пуста'}
 ${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ ДУБЛИ (ВЫБЕРИ ДРУГУЮ ИГРУ И ДРУГОЙ ИНФОПОВОД):\n- ${rejectedTopics.join('\n- ')}\n` : ''}
@@ -288,14 +277,14 @@ ${rejectedTopics.length ? `\nОТКЛОНЁННЫЕ В ЭТОМ ЗАПУСКЕ �
    - Абзац 3 (Бэкграунд и контекст): История вопроса, сравнение с предыдущими релизами студии или поколениями железа.
    - Абзац 4 (Редакторский вывод): Что это значит для игроков и чего ждать дальше.
 5. ТОЧНЫЙ ПОДБОР ОФИЦИАЛЬНОЙ ОБЛОЖКИ (СТРОГАЯ ИЕРАРХИЯ):
-   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, новинки/резонанс, анонсированные сиквелы или киберспорт — например, "Nioh 3", "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название (без приписок вроде "Complete Edition", если основная игра называется короче), а в "platformBrand" напиши "none". Предыдущую часть серии указывай ТОЛЬКО в "backupGameName" на случай, если у новой игры ещё нет страницы в Steam.
+   - Шаг А (Конкретная игра или киберспортивная дисциплина): Если в материале разбирается конкретная игра (включая инди, новинки/резонанс, анонсированные сиквелы или киберспорт — например, "Nioh 3", "Counter-Strike 2", "Dota 2", "Hades II", "Cyberpunk 2077"), укажи в "exactGameName" её точное английское название в Steam (без лишних приписок вроде "Complete Edition"), а в "platformBrand" напиши "none". Предыдущую часть серии указывай ТОЛЬКО в "backupGameName" на случай, если у новой игры ещё нет страницы в Steam.
    - Шаг Б (Корпорации, суды, консоли, магазины, подписки): Если новость касается корпорации, судебного разбирательства, цифрового магазина, прошивки консоли или подписки БЕЗ конкретной игры (например: суд против Sony / PlayStation Store, цены на Xbox Game Pass, продажи Nintendo Switch, правила Valve / Steam, видеокарты NVIDIA / AMD) — НЕ подставляй случайную игру! В полях "exactGameName" и "backupGameName" напиши "none", а в поле "platformBrand" укажи одно из значений: "playstation", "xbox", "nintendo", "steam" или "hardware".
-   - Шаг В (Разработчик игр без конкретной игры): Если новость касается именно игровой студии-разработчика (например, кризис в Firaxis, увольнения в Larian или Remedy) и в тексте упоминается или подразумевается их главная франшиза — укажи её в "exactGameName" ("XCOM 2", "Baldur's Gate 3", "Control Ultimate Edition"), а "platformBrand" поставь "none".
+   - Шаг В (Разработчик игр без конкретной игры): Если новость касается именно игровой студии-разработчика и в тексте упоминается или подразумевается их главная франшиза — укажи её в "exactGameName", а "platformBrand" поставь "none".
    - В поле "backupGameName" укажи вторую запасную игру этой студии/серии в Steam или "none".
 
 Верни ответ СТРОГО в формате чистого JSON (без markdown-тегов \`\`\`json и пояснений вокруг):
 {
-  "category": "${targetCategory}",
+  "category": "одна из: ПК и Консоли | Инди | Киберспорт | Новинки и резонанс | Индустрия",
   "title": "сильный, информативный заголовок на русском языке без кликбейта (НЕ начинай заголовок со слов «Обзор» или «Рецензия» — фокусируйся на самом событии, рекордах, оценках или реакции игроков)",
   "excerpt": "ёмкий анонс статьи в 1–2 предложения",
   "content": [
@@ -418,16 +407,18 @@ function safeParseGeminiJson(rawText) {
 }
 
 async function run() {
-  console.log('Целевая рубрика запуска:', TARGET_CATEGORY);
+  const preferredCategories = getPreferredCategories();
+  console.log('Режим горячих новостей. Мягкий приоритет рубрик:', preferredCategories.join(', '));
+
   const models = await getAvailableModels();
   const rssContext = await fetchFreshRssNews();
   const rejectedTopics = [];
   let parsed = null;
 
-  for (let attempt = 1; attempt <= 3 && !parsed; attempt++) {
+  for (let attempt = 1; attempt <= 5 && !parsed; attempt++) {
     for (const model of models) {
       try {
-        const rawText = await callGemini(model, buildPrompt(rssContext, TARGET_CATEGORY, rejectedTopics), attempt === 1);
+        const rawText = await callGemini(model, buildPrompt(rssContext, preferredCategories, rejectedTopics), attempt === 1);
         const candidate = safeParseGeminiJson(rawText);
         if (!candidate) continue;
 
@@ -444,9 +435,14 @@ async function run() {
     }
   }
 
-  if (!parsed) throw new Error('Не удалось сгенерировать уникальную статью без дублей.');
+  if (!parsed) {
+    console.log('Новых уникальных горячих тем не найдено (попыток: 5). Завершаем без ошибки.');
+    return;
+  }
 
-  // Легальный подбор уникальной обложки (без повторов последних 15 статей):
+  const chosenCategory = ALL_CATEGORIES.includes(parsed.category) ? parsed.category : preferredCategories[0];
+
+  // Легальный подбор уникальной обложки
   let finalImage = '';
   const brand = (parsed.platformBrand || '').toLowerCase().trim();
   if (brand && brand !== 'none' && PLATFORM_COVERS[brand]) {
@@ -466,11 +462,10 @@ async function run() {
   }
 
   if (!finalImage) {
-    const fallbackPool = LEGAL_FALLBACK_COVERS[parsed.category] || LEGAL_FALLBACK_COVERS[TARGET_CATEGORY];
+    const fallbackPool = LEGAL_FALLBACK_COVERS[chosenCategory] || LEGAL_FALLBACK_COVERS['ПК и Консоли'];
     finalImage = pickUnusedCover(fallbackPool);
   }
 
-  // Добавляем легальную строку атрибуции источников в конец статьи
   const contentArray = Array.isArray(parsed.content) ? [...parsed.content] : [String(parsed.content || '')];
   const sources = Array.isArray(parsed.sourcesUsed) ? parsed.sourcesUsed.filter(Boolean) : [];
   if (sources.length) {
@@ -480,7 +475,7 @@ async function run() {
   const newArticle = {
     id: Date.now(),
     status: 'draft',
-    category: ALL_CATEGORIES.includes(parsed.category) ? parsed.category : TARGET_CATEGORY,
+    category: chosenCategory,
     title: parsed.title,
     excerpt: parsed.excerpt,
     content: contentArray,
