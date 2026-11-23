@@ -1,7 +1,7 @@
 [
   {
     "id": 1795463914622,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Хакер Arion Kurtaj, взломавший Rockstar Games в 2022 году, вышел на свободу под жестким судебным надзором",
     "excerpt": "Один из самых известных виновников утечки материалов Grand Theft Auto 6 покинул пенитенциарное учреждение после судебного вердикта, получив строгие ограничения на использование интернета.",
@@ -17,7 +17,7 @@
       "www.polygon.com",
       "www.rockpapershotgun.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1546990/ss_1dd957711cfdf03d40ea715a1fa191a976424ec7.1920x1080.jpg",
+    "image": "./images/gta6_cover6.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
     "views": 0,
@@ -51,7 +51,7 @@
     "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4384550/a3e15ee7398954be1d6bccb7dfad700f9df7c4eb/ss_a3e15ee7398954be1d6bccb7dfad700f9df7c4eb.1920x1080.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Activision",
@@ -59,7 +59,8 @@
       "Индустрия",
       "Call of Duty"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795428056689,
@@ -81,7 +82,7 @@
     "image": "./images/brawlstars.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 0,
+    "views": 2,
     "likes": 0,
     "tags": [
       "Киберспорт",
@@ -91,7 +92,8 @@
       "Турниры",
       "Токио"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795417333727,
@@ -113,7 +115,7 @@
     "image": "./images/gta5_jason.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -122,7 +124,8 @@
       "Индустрия",
       "Персонажи"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795406894467,
@@ -144,7 +147,7 @@
     "image": "https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 0,
+    "views": 3,
     "likes": 0,
     "tags": [
       "NVIDIA",
@@ -154,7 +157,8 @@
       "Драйверы",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795395868433,
@@ -176,7 +180,7 @@
     "image": "./images/dexter.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 1,
+    "views": 6,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -208,7 +212,7 @@
     "image": "./images/gta6_cover5.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 1,
+    "views": 7,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -240,7 +244,7 @@
     "image": "./images/gra6_cover3.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -249,7 +253,8 @@
       "Индустрия",
       "Рекорды продаж"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795363469781,
@@ -271,7 +276,7 @@
     "image": "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-22",
-    "views": 0,
+    "views": 3,
     "likes": 0,
     "tags": [
       "MotorStorm: Pacific Rift",
@@ -281,7 +286,8 @@
       "Моддинг",
       "PlayStation"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795352593942,
