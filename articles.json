@@ -1,7 +1,7 @@
 [
   {
     "id": 1795471300815,
-    "status": "draft",
+    "status": "published",
     "category": "Инди",
     "title": "Deltarune на финишной прямой: Тоби Фокс завершил работу над шестой главой и готовит финал саги",
     "excerpt": "Создатель Undertale подтвердил, что шестая глава Deltarune уже полностью играбельна, и поделился планами на завершение разработки оставшихся частей RPG.",
@@ -16,7 +16,7 @@
       "Eurogamer",
       "Gematsu"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1671210/45c737112f3ca29493e2baab1b55afebcdd14195/ss_45c737112f3ca29493e2baab1b55afebcdd14195.1920x1080.jpg",
+    "image": "./images/undertale.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
     "views": 0,
