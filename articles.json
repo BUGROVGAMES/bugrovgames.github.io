@@ -63,7 +63,7 @@
   },
   {
     "id": 1795417333727,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Grand Theft Auto 6: Создатели рассказали о реальных прототипах молчаливого Джейсона",
     "excerpt": "Представители студии Rockstar Games поделились деталями создания характера Джейсона Дюваля для Grand Theft Auto 6, отметив влияние классического кинематографа и армейских спецподразделений.",
@@ -78,7 +78,7 @@
       "Eurogamer",
       "IGN"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/60690d0fdbd022ab1527ba6d080d42c1812a0f39/ss_60690d0fdbd022ab1527ba6d080d42c1812a0f39.1920x1080.jpg",
+    "image": "./images/gta5_jason.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
     "views": 0,
@@ -144,7 +144,7 @@
     "image": "./images/dexter.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -153,7 +153,8 @@
       "Индустрия",
       "Пасхалки"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795390376717,
