@@ -154,15 +154,28 @@ function pickUnusedCover(pool) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+  return fetch(url, {
+    ...options,
+    signal: options.signal || AbortSignal.timeout(timeoutMs)
+  });
+}
+
 async function getAvailableModels() {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
-  if (!res.ok) return ['gemini-2.5-flash', 'gemini-2.0-flash'];
-  const data = await res.json();
-  const names = (data.models || [])
-    .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
-    .map(m => m.name.replace('models/', ''))
-    .filter(n => n.includes('flash') && !n.includes('image') && !n.includes('audio'));
-  return names.length ? names : ['gemini-2.5-flash'];
+  try {
+    const res = await fetchWithTimeout(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
+    );
+    if (!res.ok) return ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    const data = await res.json();
+    const names = (data.models || [])
+      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map(m => m.name.replace('models/', ''))
+      .filter(n => n.includes('flash') && !n.includes('image') && !n.includes('audio'));
+    return names.length ? names : ['gemini-2.5-flash'];
+  } catch (_) {
+    return ['gemini-2.5-flash', 'gemini-2.0-flash'];
+  }
 }
 
 // Парсим свежие заголовки и факты из RSS
@@ -170,18 +183,29 @@ async function fetchFreshRssNews() {
   const items = [];
   for (const feedUrl of RSS_FEEDS) {
     try {
-      const res = await fetch(feedUrl, { headers: { 'User-Agent': 'BUGROVGAMES-Bot/1.0' } });
+      const res = await fetchWithTimeout(feedUrl, {
+        headers: { 'User-Agent': 'BUGROVGAMES-Bot/1.0' }
+      }, 8000);
       if (!res.ok) continue;
       const xml = await res.text();
       const matches = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 4);
       for (const m of matches) {
         const block = m[1];
-        const title = (block.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i)?.[1]
-          || block.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || '').trim();
+        const title = (
+          block.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i)?.[1] ||
+          block.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ||
+          ''
+        ).trim();
         const link = (block.match(/<link>([\s\S]*?)<\/link>/i)?.[1] || '').trim();
-        const desc = (block.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i)?.[1]
-          || block.match(/<description>([\s\S]*?)<\/description>/i)?.[1] || '')
-          .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 400);
+        const desc = (
+          block.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/i)?.[1] ||
+          block.match(/<description>([\s\S]*?)<\/description>/i)?.[1] ||
+          ''
+        )
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 400);
 
         if (title) {
           items.push(`- [${new URL(feedUrl).hostname}] ${title} | URL: ${link} | ${desc}`);
@@ -198,7 +222,11 @@ async function findSteamCover(gameTitle) {
   try {
     const cleanTitle = gameTitle.trim();
     const query = encodeURIComponent(cleanTitle);
-    const res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${query}&l=english&cc=US`);
+    const res = await fetchWithTimeout(
+      `https://store.steampowered.com/api/storesearch/?term=${query}&l=english&cc=US`,
+      {},
+      8000
+    );
     if (!res.ok) return null;
     const data = await res.json();
     const apps = (data.items || []).filter(item => item.type === 'app');
@@ -214,7 +242,11 @@ async function findSteamCover(gameTitle) {
 
     // 1. Пробуем забрать официальные HD-скриншоты (1920x1080) со страницы игры
     try {
-      const detailsRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${match.id}&cc=US&l=english`);
+      const detailsRes = await fetchWithTimeout(
+        `https://store.steampowered.com/api/appdetails?appids=${match.id}&cc=US&l=english`,
+        {},
+        8000
+      );
       if (detailsRes.ok) {
         const detailsJson = await detailsRes.json();
         const appData = detailsJson?.[String(match.id)]?.data;
@@ -232,12 +264,12 @@ async function findSteamCover(gameTitle) {
 
     // 2. Широкоформатный library_hero.jpg
     const heroUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/library_hero.jpg`;
-    const heroCheck = await fetch(heroUrl, { method: 'HEAD' });
+    const heroCheck = await fetchWithTimeout(heroUrl, { method: 'HEAD' }, 6000);
     if (heroCheck.ok && !recentImages.has(heroUrl)) return heroUrl;
 
     // 3. Запасной header.jpg
     const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${match.id}/header.jpg`;
-    const headerCheck = await fetch(headerUrl, { method: 'HEAD' });
+    const headerCheck = await fetchWithTimeout(headerUrl, { method: 'HEAD' }, 6000);
     if (headerCheck.ok) return headerUrl;
   } catch (_) {}
   return null;
@@ -308,11 +340,15 @@ async function callGemini(model, prompt, useGoogleSearch) {
     generationConfig: { temperature: 0.45 }
   };
   if (useGoogleSearch) payload.tools = [{ google_search: {} }];
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  const res = await fetchWithTimeout(
+    url,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    },
+    45000
+  );
   if (!res.ok) {
     const err = new Error(`HTTP ${res.status}`);
     err.status = res.status;
@@ -356,33 +392,22 @@ function jaccardSimilarity(setA, setB) {
   for (const item of setA) {
     if (setB.has(item)) intersection++;
   }
-  const minSize = Math.min(setA.size, setB.size);
-  return intersection / minSize;
+  const unionSize = setA.size + setB.size - intersection;
+  return unionSize > 0 ? intersection / unionSize : 0;
 }
 
 function findDuplicateArticle(candidate) {
   const candTitleTokens = normalizeTokens(candidate.title);
-  const candFullTokens = normalizeTokens([
-    candidate.title,
-    candidate.excerpt,
-    Array.isArray(candidate.content) ? candidate.content[0] : '',
-    (candidate.tags || []).join(' '),
-    candidate.exactGameName !== 'none' ? candidate.exactGameName : ''
-  ].join(' '));
+  const candLeadTokens = normalizeTokens(`${candidate.title} ${candidate.excerpt || ''}`);
 
   for (const existing of recentArticles) {
     const exTitleTokens = normalizeTokens(existing.title);
-    const exFullTokens = normalizeTokens([
-      existing.title,
-      existing.excerpt,
-      Array.isArray(existing.content) ? existing.content[0] : '',
-      (existing.tags || []).join(' ')
-    ].join(' '));
+    const exLeadTokens = normalizeTokens(`${existing.title} ${existing.excerpt || ''}`);
 
     const titleSim = jaccardSimilarity(candTitleTokens, exTitleTokens);
-    const fullSim = jaccardSimilarity(candFullTokens, exFullTokens);
+    const leadSim = jaccardSimilarity(candLeadTokens, exLeadTokens);
 
-    if (titleSim >= 0.45 || fullSim >= 0.35) {
+    if (titleSim >= 0.42 || leadSim >= 0.36) {
       return existing.title;
     }
   }
@@ -400,7 +425,11 @@ function safeParseGeminiJson(rawText) {
   cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
   try {
     const obj = JSON.parse(cleaned);
-    return obj && obj.title && obj.content ? obj : null;
+    const hasTitle = typeof obj?.title === 'string' && obj.title.trim().length > 0;
+    const hasContent =
+      (Array.isArray(obj?.content) && obj.content.length > 0) ||
+      (typeof obj?.content === 'string' && obj.content.trim().length > 0);
+    return hasTitle && hasContent ? obj : null;
   } catch (_) {
     return null;
   }
@@ -418,20 +447,30 @@ async function run() {
   for (let attempt = 1; attempt <= 5 && !parsed; attempt++) {
     for (const model of models) {
       try {
-        const rawText = await callGemini(model, buildPrompt(rssContext, preferredCategories, rejectedTopics), attempt === 1);
+        const useSearch = attempt <= 3;
+        const rawText = await callGemini(
+          model,
+          buildPrompt(rssContext, preferredCategories, rejectedTopics),
+          useSearch
+        );
         const candidate = safeParseGeminiJson(rawText);
-        if (!candidate) continue;
+        if (!candidate) {
+          console.log(`[Попытка ${attempt}, ${model}] Не удалось распарсить JSON ответа.`);
+          continue;
+        }
 
         const duplicateOf = findDuplicateArticle(candidate);
         if (duplicateOf) {
-          console.log(`Отклонён дубль (похоже на «${duplicateOf}»): ${candidate.title}`);
+          console.log(`[Попытка ${attempt}, ${model}] Отклонён дубль (похоже на «${duplicateOf}»): ${candidate.title}`);
           rejectedTopics.push(`${candidate.title} (дубль статьи «${duplicateOf}»)`);
           break;
         }
 
         parsed = candidate;
         break;
-      } catch (_) {}
+      } catch (err) {
+        console.log(`[Попытка ${attempt}, ${model}] Ошибка запроса: ${err.message}`);
+      }
     }
   }
 
@@ -453,7 +492,13 @@ async function run() {
     const candidates = [
       parsed.exactGameName,
       parsed.backupGameName
-    ].filter(name => name && name.toLowerCase() !== 'none' && /^[a-zA-Z0-9\s:'".-]+$/.test(name) && name.length > 2);
+    ].filter(
+      name =>
+        name &&
+        name.toLowerCase() !== 'none' &&
+        /^[a-zA-Z0-9\s:'".-]+$/.test(name) &&
+        name.length > 2
+    );
 
     for (const gameName of candidates) {
       finalImage = await findSteamCover(gameName);
@@ -466,18 +511,25 @@ async function run() {
     finalImage = pickUnusedCover(fallbackPool);
   }
 
-  const contentArray = Array.isArray(parsed.content) ? [...parsed.content] : [String(parsed.content || '')];
+  const contentArray = Array.isArray(parsed.content)
+    ? parsed.content.map(p => String(p).trim()).filter(Boolean)
+    : [String(parsed.content || '').trim()].filter(Boolean);
   const sources = Array.isArray(parsed.sourcesUsed) ? parsed.sourcesUsed.filter(Boolean) : [];
   if (sources.length) {
     contentArray.push(`Источники: ${sources.join(', ')}.`);
   }
 
+  const tags =
+    Array.isArray(parsed.tags) && parsed.tags.length > 0
+      ? parsed.tags.map(t => String(t).trim()).filter(Boolean)
+      : ['Игры', 'Новости'];
+
   const newArticle = {
     id: Date.now(),
     status: 'draft',
     category: chosenCategory,
-    title: parsed.title,
-    excerpt: parsed.excerpt,
+    title: parsed.title.trim(),
+    excerpt: String(parsed.excerpt || '').trim(),
     content: contentArray,
     sourcesUsed: sources,
     image: finalImage,
@@ -485,7 +537,7 @@ async function run() {
     date: new Date().toISOString().split('T')[0],
     views: 0,
     likes: 0,
-    tags: parsed.tags || ['Игры', 'Новости'],
+    tags,
     isFeatured: false
   };
 
