@@ -15,6 +15,8 @@ const recentImages = new Set(articles.slice(0, 15).map(a => a.image).filter(Bool
 
 const ALL_CATEGORIES = ['ПК и Консоли', 'Инди', 'Киберспорт', 'Новинки и резонанс', 'Индустрия'];
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 // Определяем рубрики, которых не было в последних 3 публикациях (для мягкого баланса)
 function getPreferredCategories() {
   const recentCategories = articles.slice(0, 3).map(a => a.category);
@@ -161,21 +163,14 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
   });
 }
 
+// Фиксированный порядок моделей под лимиты Free tier: сначала 500 RPD, затем 20 RPD в резерв
 async function getAvailableModels() {
-  try {
-    const res = await fetchWithTimeout(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
-    );
-    if (!res.ok) return ['gemini-2.5-flash', 'gemini-2.0-flash'];
-    const data = await res.json();
-    const names = (data.models || [])
-      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
-      .map(m => m.name.replace('models/', ''))
-      .filter(n => n.includes('flash') && !n.includes('image') && !n.includes('audio'));
-    return names.length ? names : ['gemini-2.5-flash'];
-  } catch (_) {
-    return ['gemini-2.5-flash', 'gemini-2.0-flash'];
-  }
+  return [
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-flash-lite',
+    'gemini-3.6-flash',
+    'gemini-3-flash'
+  ];
 }
 
 // Парсим свежие заголовки и факты из RSS
@@ -444,10 +439,10 @@ async function run() {
   const rejectedTopics = [];
   let parsed = null;
 
-  for (let attempt = 1; attempt <= 5 && !parsed; attempt++) {
+  for (let attempt = 1; attempt <= 3 && !parsed; attempt++) {
     for (const model of models) {
       try {
-        const useSearch = attempt <= 3;
+        const useSearch = attempt === 1;
         const rawText = await callGemini(
           model,
           buildPrompt(rssContext, preferredCategories, rejectedTopics),
@@ -470,12 +465,15 @@ async function run() {
         break;
       } catch (err) {
         console.log(`[Попытка ${attempt}, ${model}] Ошибка запроса: ${err.message}`);
+        if (err.status === 429 || err.status === 503) {
+          await sleep(5000);
+        }
       }
     }
   }
 
   if (!parsed) {
-    console.log('Новых уникальных горячих тем не найдено (попыток: 5). Завершаем без ошибки.');
+    console.log('Новых уникальных горячих тем не найдено (попыток: 3). Завершаем без ошибки.');
     return;
   }
 
