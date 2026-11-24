@@ -168,8 +168,7 @@ async function getAvailableModels() {
   return [
     'gemini-3.5-flash-lite',
     'gemini-3.1-flash-lite',
-    'gemini-3.6-flash',
-    'gemini-3-flash'
+    'gemini-3.6-flash'
   ];
 }
 
@@ -466,7 +465,7 @@ async function run() {
       } catch (err) {
         console.log(`[Попытка ${attempt}, ${model}] Ошибка запроса: ${err.message}`);
         if (err.status === 429 || err.status === 503) {
-          await sleep(5000);
+          await sleep(12000);
         }
       }
     }
