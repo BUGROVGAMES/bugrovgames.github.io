@@ -1,7 +1,7 @@
 [
   {
     "id": 1795525365466,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Sony раскрыла тираж Grand Theft Auto VI: игра превзошла все запуски в истории PlayStation",
     "excerpt": "",
@@ -52,7 +52,7 @@
     "image": "./images/thewitcher4.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "The Witcher 4",
@@ -61,7 +61,8 @@
       "Индустрия",
       "Интервью"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795503667272,
@@ -84,7 +85,7 @@
     "image": "./images/gta6_cover7.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -92,7 +93,8 @@
       "Rockstar Games",
       "Рекорды"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795492858618,
@@ -114,7 +116,7 @@
     "image": "./images/godofwar.jpeg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 2,
     "likes": 0,
     "tags": [
       "God of War",
@@ -123,7 +125,8 @@
       "Sony",
       "Индустрия"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795482059927,
@@ -338,7 +341,7 @@
     "image": "https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-23",
-    "views": 3,
+    "views": 6,
     "likes": 0,
     "tags": [
       "NVIDIA",
