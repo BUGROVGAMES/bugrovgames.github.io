@@ -1,7 +1,7 @@
 [
   {
     "id": 1795514467174,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "CD Projekt RED обещает сохранить глубину RPG в The Witcher 4 ради новой аудитории",
     "excerpt": "Вице-президент по сюжету Марцин Блаха и нарративный директор Филип Вебер заверили фанатов, что грядущая игра серии привлечет игроков с новыми медиа, но останется верна канонам жанра.",
@@ -16,7 +16,7 @@
       "wccftech.com",
       "cdprojektred.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/8a97157ec7e4f3d458d70a0942779f093f404d8c/ss_8a97157ec7e4f3d458d70a0942779f093f404d8c.1920x1080.jpg",
+    "image": "./images/thewitcher4.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
     "views": 0,
