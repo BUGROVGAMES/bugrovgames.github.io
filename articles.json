@@ -32,7 +32,7 @@
   },
   {
     "id": 1795503667272,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Эффект домино: релиз Grand Theft Auto VI обрушил онлайн Call of Duty более чем на 40%",
     "excerpt": "Выход главного блокбастера десятилетия вызвал беспрецедентный отток аудитории из крупнейших сервисных игр, включая Call of Duty и Fortnite.",
@@ -48,7 +48,7 @@
       "GameSpot",
       "PC Gamer"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1546990/ss_1dd957711cfdf03d40ea715a1fa191a976424ec7.1920x1080.jpg",
+    "image": "./images/gta6_cover7.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
     "views": 0,
@@ -114,7 +114,7 @@
     "image": "./gta6_cover.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -124,7 +124,8 @@
       "Индустрия",
       "Новинки и резонанс"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795471300815,
