@@ -1,7 +1,7 @@
 [
   {
     "id": 1795633296163,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "EA Sports FC 27 вернет в серию легендарного комментатора Джона Мотсона с помощью искусственного интеллекта",
     "excerpt": "Издательство Electronic Arts планирует использовать генеративные нейросети для цифрового воссоздания голоса культового футбольного комментатора Джона Мотсона в EA Sports FC 27.",
@@ -16,7 +16,7 @@
       "Eurogamer",
       "Insider Gaming"
     ],
-    "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/Fc27.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-25",
     "views": 0,
