@@ -1,5 +1,35 @@
 [
   {
+    "id": 1795579286670,
+    "status": "draft",
+    "category": "Индустрия",
+    "title": "Call of Duty потеряла 44% аудитории после релиза Grand Theft Auto 6, но удерживает 19-летнюю серию побед",
+    "excerpt": "Аналитики подсчитали масштабный отток игроков из шутера Activision на фоне запуска GTA 6, однако франшиза продолжает лидировать по продажам в США.",
+    "content": [
+      "Релиз масштабного криминального экшена Grand Theft Auto 6 от Rockstar Games нанес серьезный удар по позициям главных конкурентов в сегменте многопользовательских сервисов. По данным аналитических агентств Alinea Analytics и PC Gamer, в первые дни после выхода блокбастера суточный онлайн шутера Call of Duty сократился в среднем на 42-44 процента. В отличие от фан-баз других соревновательных проектов, игроки в Call of Duty возвращаются к привычным матчам значительно медленнее, продолжая исследовать открытый мир Леониды.",
+      "Источники: www.eurogamer.net, www.pcgamer.com, www.gamespot.com."
+    ],
+    "sourcesUsed": [
+      "www.eurogamer.net",
+      "www.pcgamer.com",
+      "www.gamespot.com"
+    ],
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3595230/e9aec47f6bd0253360fbeb9e30b9f254dbd656c4/ss_e9aec47f6bd0253360fbeb9e30b9f254dbd656c4.1920x1080.jpg",
+    "author": "Редакция BUGROVGAMES",
+    "date": "2026-11-25",
+    "views": 0,
+    "likes": 0,
+    "tags": [
+      "Call of Duty",
+      "GTA 6",
+      "Rockstar Games",
+      "Activision",
+      "Индустрия",
+      "Статистика"
+    ],
+    "isFeatured": false
+  },
+  {
     "id": 1795568493674,
     "status": "draft",
     "category": "ПК и Консоли",
