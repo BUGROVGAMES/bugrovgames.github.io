@@ -1,7 +1,7 @@
 [
   {
     "id": 1795698087576,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Художники против алгоритмов: фанаты запустили событие «Games Without AI» в Steam на фоне волны споров",
     "excerpt": "На платформе Steam стартовал независимый фестиваль «Games Without AI», цель которого — поддержать разработчиков, полностью отказавшихся от использования генеративных нейросетей.",
@@ -16,7 +16,7 @@
       "Eurogamer",
       "Kotaku"
     ],
-    "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/steam.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-26",
     "views": 0,
