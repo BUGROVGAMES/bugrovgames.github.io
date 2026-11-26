@@ -32,7 +32,7 @@
   },
   {
     "id": 1795665688626,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Студия Playground Games призналась, что ориентировалась на The Witcher 3 при создании перезапуска Fable",
     "excerpt": "Разработчики грядущего перезапуска культовой RPG Fable рассказали, почему классическая трилогия от Lionhead Studios больше не является главным ориентиром для современной индустрии.",
@@ -47,7 +47,7 @@
       "Eurogamer",
       "GamesRadar"
     ],
-    "image": "https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/fable.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-26",
     "views": 0,
@@ -82,7 +82,7 @@
     "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-26",
-    "views": 0,
+    "views": 6,
     "likes": 0,
     "tags": [
       "Ubisoft",
@@ -91,7 +91,8 @@
       "Разработка игр",
       "Скандалы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795647483540,
@@ -113,7 +114,7 @@
     "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1286320/ss_04051b9b59e09d3cc8e22844e4eb52ef927a1c82.1920x1080.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-25",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "Exoprimal",
@@ -121,7 +122,8 @@
       "Индустрия",
       "Новинки и резонанс"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795633296163,
@@ -143,7 +145,7 @@
     "image": "./images/Fc27.webp",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-25",
-    "views": 0,
+    "views": 4,
     "likes": 0,
     "tags": [
       "EA Sports FC 27",
@@ -152,7 +154,8 @@
       "Индустрия",
       "Скандалы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795557772363,
@@ -176,7 +179,7 @@
     "image": "https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 3,
     "likes": 0,
     "tags": [
       "The Witcher 4",
@@ -186,7 +189,8 @@
       "Индустрия",
       "ПК и Консоли"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795546943370,
@@ -240,7 +244,7 @@
     "image": "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=80",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-24",
-    "views": 0,
+    "views": 3,
     "likes": 0,
     "tags": [
       "Grand Theft Auto VI",
@@ -250,7 +254,8 @@
       "Индустрия",
       "Рекорды"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795514467174,
