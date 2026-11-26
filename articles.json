@@ -1,7 +1,7 @@
 [
   {
     "id": 1795708896242,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Сотрудники студии Rockstar Games отклонили профсоюзное соглашение на историческом голосовании",
     "excerpt": "Подавляющее большинство разработчиков Rockstar Games проголосовало против официального признания профсоюза Rockstar Game Workers Union после масштабного запуска Grand Theft Auto VI.",
@@ -16,7 +16,7 @@
       "www.videogameschronicle.com",
       "www.eurogamer.net"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/f4a6f63b4f7cb42262152449ba5e5c5837f20ff4/ss_f4a6f63b4f7cb42262152449ba5e5c5837f20ff4.1920x1080.jpg",
+    "image": "./images/rockstar.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-26",
     "views": 0,
