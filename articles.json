@@ -1,7 +1,7 @@
 [
   {
     "id": 1795719693830,
-    "status": "draft",
+    "status": "published",
     "category": "Новинки и резонанс",
     "title": "Grand Theft Auto VI установила абсолютный рекорд стриминговых сервисов в первую неделю после релиза",
     "excerpt": "",
@@ -16,7 +16,7 @@
       "www.eurogamer.net",
       "www.videogameschronicle.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/d61184a98c1cf2db2b08b2999c04b0519e3615bb/ss_d61184a98c1cf2db2b08b2999c04b0519e3615bb.1920x1080.jpg",
+    "image": "./images/gta6.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-26",
     "views": 0,
