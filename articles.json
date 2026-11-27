@@ -1,7 +1,7 @@
 [
   {
     "id": 1795806088218,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Шокирующие системные требования Exodus: от бюджетных видеокарт до ультимативного железа для 4K",
     "excerpt": "Студия Archetype Entertainment раскрыла официальные системные требования амбициозного научно-фантастического ролевого экшена Exodus, удивив игроков демократичным порогом входа и заоблачными требованиями для максимальных настроек.",
@@ -16,7 +16,7 @@
       "www.rockpapershotgun.com",
       "wccftech.com"
     ],
-    "image": "https://images.unsplash.com/photo-1555617981-dac3880eac6e?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/exodus.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
     "views": 0,
