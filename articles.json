@@ -1,7 +1,7 @@
 [
   {
     "id": 1795816888462,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Marvel's Iron Man от EA Motive может получить новый показ на церемонии The Game Awards",
     "excerpt": "Студия EA Motive обновила официальный сайт своего долгостроя Marvel's Iron Man, намекнув на скорый показ игрового процесса перед декабрьским шоу The Game Awards.",
@@ -16,7 +16,7 @@
       "www.eurogamer.net",
       "www.videogameschronicle.com"
     ],
-    "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+    "image": "./image/ironman.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
     "views": 0,
