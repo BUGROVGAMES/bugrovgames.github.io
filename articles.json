@@ -33,7 +33,7 @@
   },
   {
     "id": 1795773690591,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "Издательство Marvelous объявило о сокращении штата в рамках реструктуризации консольного бизнеса",
     "excerpt": "Японская компания Marvelous запускает программу добровольного увольнения сотрудников, планируя уменьшить численность персонала на 65 человек.",
@@ -48,7 +48,7 @@
       "www.eurogamer.net",
       "www.gematsu.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2508780/0ab6eaaeb247adb7c3f908625e612e50b622405d/ss_0ab6eaaeb247adb7c3f908625e612e50b622405d.1920x1080.jpg",
+    "image": "./images/marvelous.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
     "views": 0,
