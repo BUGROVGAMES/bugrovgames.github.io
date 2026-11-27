@@ -126,7 +126,7 @@
   },
   {
     "id": 1795741288719,
-    "status": "draft",
+    "status": "published",
     "category": "Индустрия",
     "title": "GitHub удалил поздравительный твит о ПК-версии Grand Theft Auto 6 после шумихи вокруг репозитория AnyPS5",
     "excerpt": "Принадлежащий Microsoft хостинг исходного кода GitHub попал в неловкую ситуацию, опубликовав и быстро удалив пост, празднующий неофициальный прогресс портирования GTA 6 на ПК.",
@@ -141,7 +141,7 @@
       "www.pcgamer.com",
       "feeds.feedburner.com"
     ],
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/f4a6f63b4f7cb42262152449ba5e5c5837f20ff4/ss_f4a6f63b4f7cb42262152449ba5e5c5837f20ff4.1920x1080.jpg",
+    "image": "./images/microsoft.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
     "views": 0,
