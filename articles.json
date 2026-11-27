@@ -1,7 +1,7 @@
 [
   {
     "id": 1795784491471,
-    "status": "draft",
+    "status": "published",
     "category": "ПК и Консоли",
     "title": "Инди-разработчик показал ранние кадры отмененного платформинг-экшена Conker 64 от студии Rare",
     "excerpt": "Сооснователь легендарной британской студии Rare поделился архивными материалами разработки Conker 64 — ранней трехмерной версии знаменитой игры, которая кардинально отличалась от финального релиза.",
@@ -16,7 +16,7 @@
       "videogameschronicle.com",
       "eurogamer.net"
     ],
-    "image": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80",
+    "image": "./images/conker.jpg",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
     "views": 0,
