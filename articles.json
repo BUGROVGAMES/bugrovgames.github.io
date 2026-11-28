@@ -16,10 +16,10 @@
       "www.eurogamer.net",
       "www.videogameschronicle.com"
     ],
-    "image": "./image/ironman.webp",
+    "image": "./image/ironman.png",
     "author": "Редакция BUGROVGAMES",
     "date": "2026-11-27",
-    "views": 0,
+    "views": 1,
     "likes": 0,
     "tags": [
       "EA Motive",
@@ -28,7 +28,8 @@
       "ПК и Консоли",
       "Анонсы"
     ],
-    "isFeatured": false
+    "isFeatured": false,
+    "comments": 0
   },
   {
     "id": 1795806088218,
